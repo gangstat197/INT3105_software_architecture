@@ -52,7 +52,7 @@ Chọn type theo tác động chính của commit. Ví dụ: thêm API kèm test
 
 ### 4.1. Scope theo feature
 
-`auth`, `decks`, `cards`, `dictionary`, `reviews`, `quizzes`, `exercises`, `statistics`.
+`auth`, `decks`, `cards`, `dictionary`, `reviews`, `quizzes`, `statistics`.
 
 ### 4.2. Scope hạ tầng
 
@@ -87,7 +87,7 @@ Nếu team dùng issue tracker, đặt mã issue ở footer, ví dụ `Refs: #42
 1. Chạy `git status` và `git diff --check`.
 2. Đọc `git diff --staged` để chắc chắn chỉ stage các file cần thiết.
 3. Chạy test hoặc kiểm tra liên quan đến phần đã sửa.
-4. Nếu thay đổi database model, kiểm tra migration và cập nhật [Installation & Setup Guide](installation.md) khi cách setup thay đổi.
+4. Nếu thay đổi database model, kiểm tra migration và cập nhật [Architecture Convention](02_architecture-convention.md) khi thiết kế thay đổi; cập nhật [Installation & Setup Guide](01_installation-setup.md) khi cách chạy thay đổi.
 
 ### 6.2. Tạo commit
 
@@ -100,7 +100,7 @@ Stage file cụ thể bằng `git add <path>` và commit với message theo Mụ
 ```text
 feat(auth): add user registration with hashed passwords
 feat(cards): populate word details from dictionary API
-feat(quizzes): prioritize overdue cards in new sessions
+feat(reviews): prioritize overdue cards in study sessions
 ```
 
 ### 7.2. Sửa lỗi và database
