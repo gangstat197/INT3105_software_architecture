@@ -1,4 +1,5 @@
 from app.models.base import Base
+from app.models.card import Card
 from typing import List
 from typing import Optional
 from sqlalchemy import Text
@@ -24,6 +25,10 @@ class Word(Base):
     # word has many meanings -> one to many relationship
     meanings: Mapped[List["WordMeaning"]] = relationship(
         back_populates="word", cascade="all, delete-orphan"
+    )
+
+    cards: Mapped[List["Card"]] = relationship(
+        back_populates="word"
     )
 
 class WordMeaning(Base):
