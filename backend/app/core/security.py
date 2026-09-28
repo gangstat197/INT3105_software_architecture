@@ -1,7 +1,11 @@
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
-import jwt
 from backend.app.core.config import settings
+import jwt
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 pwd_context = CryptContext(
@@ -46,5 +50,5 @@ def decode_access_token(token: str) -> dict | None:
             algorithms=[settings.JWT_ALGORITHM],
         )
     except jwt.PyJWTError as e:
-        print("JWT decode error:", type(e).__name__, e)
+        logger.error("JWT decode error: %s - %s", type(e).__name__, e)
         return None
