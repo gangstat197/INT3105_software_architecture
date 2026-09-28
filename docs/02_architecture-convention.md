@@ -61,17 +61,16 @@ Quy ước box: 5 box với khoảng chờ tương ứng **1, 3, 7, 14, 30 ngày
 
 ## 2. Project structure
 
-```
-├───backend
-│   └───app
-│       ├───core
-│       ├───db
-│       ├───models
-│       ├───repositories
-│       ├───routers
-│       ├───schemas
-│       └───services
-```
+| Vị trí | Trách nhiệm | Lý do tách |
+| --- | --- | --- |
+| `backend/app/main.py` | Tạo FastAPI app, gắn router | Giữ điểm khởi động ngắn |
+| `backend/app/routers/` | HTTP path, nhận request, gọi service, trả response | HTTP không chứa nghiệp vụ/SQL |
+| `backend/app/schemas/` | Pydantic schema cho request/response và snapshot | Không lộ ORM model qua API |
+| `backend/app/services/` | Ownership, dictionary, Leitner, tạo/chấm quiz và transaction | Một nơi áp dụng quy tắc nghiệp vụ |
+| `backend/app/repositories/` | Truy vấn/ghi dữ liệu qua SQLAlchemy | Query không rải trong router/service |
+| `backend/app/models/` | ORM model và quan hệ database | Phân biệt schema DB với HTTP |
+| `backend/app/db/` | Engine, session, metadata; schema thay đổi qua Alembic | Quản lý kết nối nhất quán |
+| `backend/app/core/` | Config, JWT và password hashing | Không lặp mã bảo mật |
 
 ## 3. Database design
 
