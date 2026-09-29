@@ -1,14 +1,8 @@
 from app.models.base import Base
 from app.models.card import Card
-from typing import List
-from typing import Optional
-from sqlalchemy import Text
-from sqlalchemy import String
-from sqlalchemy import ForeignKey
-from sqlalchemy import UniqueConstraint
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from typing import List, Optional
+from sqlalchemy import Text, String, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class Word(Base):
     __tablename__= "word"

@@ -1,11 +1,8 @@
 from app.models.base import Base
 from typing import Optional
 from datetime import datetime
-from sqlalchemy import String
-from sqlalchemy import ForeignKey
-from sqlalchemy import DateTime
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
+from sqlalchemy import String, ForeignKey, DateTime
+from sqlalchemy.orm import Mapped, mapped_column
 
 class User(Base):
     __tablename__ = "user"

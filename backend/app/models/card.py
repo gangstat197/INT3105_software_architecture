@@ -3,12 +3,8 @@ from app.models.deck import Deck
 from app.models.word import Word
 from typing import Optional
 from datetime import datetime
-from sqlalchemy import Text
-from sqlalchemy import DateTime
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from sqlalchemy import Text, DateTime, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class Card(Base):
     __tablename__= "card"

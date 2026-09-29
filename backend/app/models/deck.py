@@ -1,14 +1,9 @@
 from app.models.base import Base
 from app.models.card import Card
 from app.models.quiz import Quiz
-from typing import Optional
-from typing import List
-from sqlalchemy import Text
-from sqlalchemy import String
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from typing import Optional, List
+from sqlalchemy import Text, String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class Deck(Base):
     __tablename__= "deck"
