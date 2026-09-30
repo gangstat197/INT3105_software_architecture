@@ -4,7 +4,7 @@ from sqlalchemy import Text, String, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class Word(Base):
-    __tablename__= "word"
+    __tablename__ = "word"
     __table_args__ = (
         UniqueConstraint("language", "normalized_word", name="unique_constraint_word_language_normalized"), # name is optional but for clarity, can be renamed for shorthand?
     )
