@@ -1,4 +1,4 @@
-from app.models.base import Base
+from .base import Base
 from typing import Optional
 from datetime import datetime
 from sqlalchemy import String, ForeignKey, DateTime

@@ -1,6 +1,4 @@
-from app.models.base import Base
-from app.models.deck import Deck
-from app.models.word import Word
+from .base import Base
 from typing import Optional
 from datetime import datetime
 from sqlalchemy import Text, DateTime, ForeignKey
@@ -23,5 +21,3 @@ class Card(Base):
     review_total_count: Mapped[int] = mapped_column(default=0)
     review_correct_count: Mapped[int] = mapped_column(default=0)
     review_version: Mapped[int] = mapped_column(default=0)
-
-
