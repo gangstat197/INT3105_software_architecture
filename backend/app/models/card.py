@@ -7,7 +7,7 @@ from sqlalchemy import Text, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class Card(Base):
-    __tablename__= "card"
+    __tablename__ = "card"
 
     card_id: Mapped[int] = mapped_column(primary_key=True)
     deck_id: Mapped[int] = mapped_column(ForeignKey("deck.deck_id", ondelete="CASCADE"))
