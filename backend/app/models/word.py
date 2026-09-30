@@ -1,5 +1,4 @@
-from app.models.base import Base
-from app.models.card import Card
+from .base import Base
 from typing import List, Optional
 from sqlalchemy import Text, String, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship

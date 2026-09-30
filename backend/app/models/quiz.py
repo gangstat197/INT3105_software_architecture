@@ -1,6 +1,5 @@
-from app.models.base import Base
-from app.models.deck import Deck
-from typing import Optional, List 
+from .base import Base
+from typing import Optional, List
 from datetime import datetime
 from sqlalchemy import DateTime, Boolean, Text, ForeignKey, ForeignKeyConstraint, UniqueConstraint, PrimaryKeyConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -41,6 +40,7 @@ class QuizCard(Base):
     __tablename__ = "quiz_card"
     # Composite FK
     # https://docs.sqlalchemy.org/en/21/core/constraints.html#sqlalchemy.schema.ForeignKeyConstraint
+    # Relationship handled by PostgreSQL
     __table_args__ = (
         PrimaryKeyConstraint(
             "quiz_id", 
@@ -69,6 +69,7 @@ class QuizCard(Base):
     user_answer: Mapped[Optional[str]] = mapped_column(Text)
     is_correct: Mapped[bool] = mapped_column(Boolean)
 
+    # Relationship handled by SQLAlchemy 
     attempt: Mapped["Attempt"] = relationship(back_populates="quiz_cards")
 
 class Attempt(Base):
@@ -86,5 +87,6 @@ class Attempt(Base):
     quiz: Mapped["Quiz"] = relationship(back_populates="attempts")
 
     quiz_cards: Mapped[List["QuizCard"]] = relationship(
-        back_populates="attempt"
+        back_populates="attempt",
+        cascade="all, delete-orphan",
     )
