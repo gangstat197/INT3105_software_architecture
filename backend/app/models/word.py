@@ -1,16 +1,10 @@
-from app.models.base import Base
-from typing import List
-from typing import Optional
-from sqlalchemy import Text
-from sqlalchemy import String
-from sqlalchemy import ForeignKey
-from sqlalchemy import UniqueConstraint
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from .base import Base
+from typing import List, Optional
+from sqlalchemy import Text, String, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class Word(Base):
-    __tablename__= "word"
+    __tablename__ = "word"
     __table_args__ = (
         UniqueConstraint("language", "normalized_word", name="unique_constraint_word_language_normalized"), # name is optional but for clarity, can be renamed for shorthand?
     )
@@ -24,6 +18,10 @@ class Word(Base):
     # word has many meanings -> one to many relationship
     meanings: Mapped[List["WordMeaning"]] = relationship(
         back_populates="word", cascade="all, delete-orphan"
+    )
+
+    cards: Mapped[List["Card"]] = relationship(
+        back_populates="word"
     )
 
 class WordMeaning(Base):
