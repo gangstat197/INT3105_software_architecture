@@ -6,6 +6,10 @@ from backend.app.core.security import decode_access_token
 
 
 PUBLIC_PATHS = {
+    "/docs",
+    "/openapi.json",
+    "/redoc",
+    "/favicon.ico",
     "/api/auth/register",
     "/api/auth/login",
     "/api/auth/forgot-password",
