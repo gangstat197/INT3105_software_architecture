@@ -6,10 +6,12 @@ from backend.app.core.security import decode_access_token
 
 
 PUBLIC_PATHS = {
-    "/register",
-    "/login",
-    "/forgot-password",
-    "reset-password"
+    "/api/auth/register",
+    "/api/auth/login",
+    "/api/auth/forgot-password",
+    "/api/auth/reset-password",
+    "/api/health/db",
+    "/api/health/models",
 }
 
 
