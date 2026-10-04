@@ -4,7 +4,7 @@ Tài liệu này mô tả nghiệp vụ, trách nhiệm từng layer, database v
 
 Lệnh cài đặt/chạy nằm ở [01_installation-setup.md](01_installation-setup.md). Nếu trong quá trình cài đặt mọi người thay đổi interface thì mọi người cũng phải cập nhật tài liệu trong cùng PR. Không được merge code thay đổi API mà docs vẫn chưa được cập nhật.
 
-Stack: Python/FastAPI, SQLAlchemy, PostgreSQL 17, Alembic và Docker Compose. Phiên bản package nằm trong `requirements.txt`.
+Stack: Python/FastAPI, SQLAlchemy, PostgreSQL 17 và Docker Compose. Phiên bản package nằm trong `requirements.txt`.
 
 ## 1. Requirements và nghiệp vụ
 
@@ -69,7 +69,7 @@ Quy ước box: 5 box với khoảng chờ tương ứng **1, 3, 7, 14, 30 ngày
 | `backend/app/services/` | Ownership, dictionary, Leitner, tạo/chấm quiz và transaction | Một nơi áp dụng quy tắc nghiệp vụ |
 | `backend/app/repositories/` | Truy vấn/ghi dữ liệu qua SQLAlchemy | Query không rải trong router/service |
 | `backend/app/models/` | ORM model và quan hệ database | Phân biệt schema DB với HTTP |
-| `backend/app/db/` | Engine, session, metadata; schema thay đổi qua Alembic | Quản lý kết nối nhất quán |
+| `backend/app/db/` | Engine, session, metadata | Quản lý kết nối nhất quán |
 | `backend/app/core/` | Config, JWT và password hashing | Không lặp mã bảo mật |
 
 ## 3. Database design
@@ -199,7 +199,7 @@ Mỗi attempt đọc **snapshot** để hiển thị/chấm; `quiz_card` chỉ l
 
 ## 4. API list
 
-Endpoint chẩn đoán public: `GET /api/health/models` kiểm tra đăng ký model và resolve quan hệ ORM; `GET /api/health/db` chạy `SELECT 1` qua session, trả `503` khi database không khả dụng. Hai endpoint không ghi dữ liệu và không kiểm tra schema đã migrate.
+Endpoint chẩn đoán public: `GET /api/health/models` kiểm tra đăng ký model và resolve quan hệ ORM; `GET /api/health/db` chạy `SELECT 1` qua session, trả `503` khi database không khả dụng. Hai endpoint không ghi dữ liệu.
 
 Các path dưới đây là contract dự kiến. Multiple choice và fill dùng cùng nhóm `/api/quizzes`. Mọi path ngoài auth public đều kiểm tra owner như Mục 1.1.
 

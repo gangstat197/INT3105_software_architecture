@@ -48,7 +48,7 @@ curl http://localhost:8000/api/health/models
 curl http://localhost:8000/api/health/db
 ```
 
-Endpoint models chỉ kiểm tra cấu hình ORM, không truy vấn database. Endpoint db chỉ kiểm tra kết nối; cả hai không tạo bảng và không xác nhận schema đã được migrate.
+Endpoint models chỉ kiểm tra cấu hình ORM, không truy vấn database. Endpoint db chỉ kiểm tra kết nối; cả hai không tạo bảng.
 
 ## 4. Lệnh dùng khi phát triển
 
