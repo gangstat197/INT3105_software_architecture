@@ -35,11 +35,16 @@ def lookup_provider(word: str, language: str="en", timeout: float=5.0) -> dict[s
         ) from exc
 
     try:
-        return response.json()
+        data = response.json()
     except ValueError as exc:
         raise DictionaryProviderError(
             "Invalid JSON response from dictionary provider"
         ) from exc
+
+    if not data or (isinstance(data, dict) and not data.get("entries")):
+        return None
+        
+    return data
 
 
 def parse(data: dict[str, Any]) -> tuple[str, list[dict]]:
@@ -70,8 +75,8 @@ def parse(data: dict[str, Any]) -> tuple[str, list[dict]]:
         meanings.append(
             {
                 "part_of_speech": part_of_speech,
-                "ipa": pronunciation["ipa"],
-                "audio": pronunciation["audio"],
+                "ipa": pronunciation.get("ipa"),
+                "audio": pronunciation.get("audio"),
                 "definitions": definitions,
             }
         )
