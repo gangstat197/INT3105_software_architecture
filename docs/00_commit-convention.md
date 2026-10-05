@@ -8,7 +8,7 @@
 
 ### 1.2. Nguyên tắc
 
-Một commit nên chứa một thay đổi logic có thể review. Commit code, migration và tài liệu liên quan cùng nhau khi chúng phụ thuộc nhau. Không commit secret, `.env`, file sinh ra khi chạy local hoặc code chưa hoạt động chỉ để lưu tạm.
+Một commit nên chứa một thay đổi logic có thể review. Commit code và tài liệu liên quan cùng nhau khi chúng phụ thuộc nhau. Không commit secret, `.env`, file sinh ra khi chạy local hoặc code chưa hoạt động chỉ để lưu tạm.
 
 ## 2. Cấu trúc commit message
 
@@ -64,7 +64,7 @@ Không cần tạo scope mới nếu scope hiện có mô tả được thay đ�
 
 ### 5.1. Body
 
-Dùng body khi tiêu đề chưa giải thích đủ: nêu lý do đổi, quyết định đáng chú ý và cách migration dữ liệu nếu có. Để một dòng trống giữa tiêu đề và body.
+Dùng body khi tiêu đề chưa giải thích đủ: nêu lý do đổi và quyết định đáng chú ý. Để một dòng trống giữa tiêu đề và body.
 
 ### 5.2. Breaking change
 
@@ -87,7 +87,7 @@ Nếu team dùng issue tracker, đặt mã issue ở footer, ví dụ `Refs: #42
 1. Chạy `git status` và `git diff --check`.
 2. Đọc `git diff --staged` để chắc chắn chỉ stage các file cần thiết.
 3. Chạy test hoặc kiểm tra liên quan đến phần đã sửa.
-4. Nếu thay đổi database model, kiểm tra migration và cập nhật [Architecture Convention](02_architecture-convention.md) khi thiết kế thay đổi; cập nhật [Installation & Setup Guide](01_installation-setup.md) khi cách chạy thay đổi.
+4. Nếu thay đổi database model, cập nhật [Architecture Convention](02_architecture-convention.md) khi thiết kế thay đổi; cập nhật [Installation & Setup Guide](01_installation-setup.md) khi cách chạy thay đổi.
 
 ### 6.2. Tạo commit
 
@@ -123,7 +123,7 @@ ci: run tests on pull requests
 
 ### 8.1. Nội dung PR
 
-Mô tả ngắn thay đổi, lý do, cách kiểm tra và tác động tới schema/API. Nếu cần migration, ghi rõ lệnh áp dụng và rủi ro dữ liệu.
+Mô tả ngắn thay đổi, lý do, cách kiểm tra và tác động tới schema/API.
 
 ### 8.2. Review
 

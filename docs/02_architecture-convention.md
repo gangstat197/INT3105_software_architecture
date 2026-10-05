@@ -4,7 +4,7 @@ Tài liệu này mô tả nghiệp vụ, trách nhiệm từng layer, database v
 
 Lệnh cài đặt/chạy nằm ở [01_installation-setup.md](01_installation-setup.md). Nếu trong quá trình cài đặt mọi người thay đổi interface thì mọi người cũng phải cập nhật tài liệu trong cùng PR. Không được merge code thay đổi API mà docs vẫn chưa được cập nhật.
 
-Stack: Python/FastAPI, SQLAlchemy, PostgreSQL 17, Alembic và Docker Compose. Phiên bản package nằm trong `requirements.txt`.
+Stack: Python/FastAPI, SQLAlchemy, PostgreSQL 17 và Docker Compose. Phiên bản package nằm trong `requirements.txt`.
 
 ## 1. Requirements và nghiệp vụ
 
@@ -69,7 +69,7 @@ Quy ước box: 5 box với khoảng chờ tương ứng **1, 3, 7, 14, 30 ngày
 | `backend/app/services/` | Ownership, dictionary, Leitner, tạo/chấm quiz và transaction | Một nơi áp dụng quy tắc nghiệp vụ |
 | `backend/app/repositories/` | Truy vấn/ghi dữ liệu qua SQLAlchemy | Query không rải trong router/service |
 | `backend/app/models/` | ORM model và quan hệ database | Phân biệt schema DB với HTTP |
-| `backend/app/db/` | Engine, session, metadata; schema thay đổi qua Alembic | Quản lý kết nối nhất quán |
+| `backend/app/db/` | Engine, session, metadata | Quản lý kết nối nhất quán |
 | `backend/app/core/` | Config, JWT và password hashing | Không lặp mã bảo mật |
 
 ## 3. Database design
@@ -199,7 +199,6 @@ Mỗi attempt đọc **snapshot** để hiển thị/chấm; `quiz_card` chỉ l
 
 ## 4. API list
 
-Endpoint chẩn đoán public: `GET /api/health/models` kiểm tra đăng ký model và resolve quan hệ ORM; `GET /api/health/db` chạy `SELECT 1` qua session, trả `503` khi database không khả dụng. Hai endpoint không ghi dữ liệu và không kiểm tra schema đã migrate.
 
 Các path dưới đây là contract dự kiến. Multiple choice và fill dùng cùng nhóm `/api/quizzes`. Mọi path ngoài auth public đều kiểm tra owner như Mục 1.1.
 
@@ -232,3 +231,12 @@ Các path dưới đây là contract dự kiến. Multiple choice và fill dùng
 | Statistics | GET | `/api/statistics` | Tổng quan của user |
 
 Frontend kiểm tra số câu và lựa chọn trước khi gửi để hỗ trợ user; backend kiểm tra attempt thuộc quiz, `card_id` khớp đúng bộ câu hỏi, và đáp án multiple choice thuộc options của câu đó. Request sai không được ghi kết quả một phần. Submit khóa/kiểm tra attempt trong transaction và chỉ chấp nhận khi `completed_at IS NULL`; request sau khi hoàn thành trả `409 Conflict` và không ghi lại score. Review với version cũ hoặc card chưa đến hạn cũng trả `409 Conflict`, không tăng box hay bộ đếm. Các path xem card sai và `/complete` trong đề xuất ban đầu được gộp vào GET attempt vì câu sai phụ thuộc vào **attempt**, không chỉ quiz.
+
+### Deck CRUD đã triển khai
+
+- Các endpoint deck yêu cầu Bearer JWT và user tồn tại trong database.
+- `POST /api/decks`: body `name` (1–255 ký tự), `description` tùy chọn; trả `201` với `deck_id`, `name`, `description`.
+- `GET /api/decks`: trả array deck của user hiện tại, sắp xếp theo `deck_id`.
+- GET/PATCH/DELETE theo ID: `404` nếu deck không tồn tại, `403` nếu không phải chủ.
+- PATCH chỉ sửa field được gửi; `description: null` xóa mô tả; `name: null` không hợp lệ.
+- DELETE trả `204`, cascade xóa card, quiz, câu hỏi, attempt và đáp án; giữ word và deck khác.
