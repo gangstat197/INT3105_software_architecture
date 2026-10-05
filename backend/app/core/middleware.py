@@ -11,10 +11,11 @@ PUBLIC_PATHS = {
     "/docs/oauth2-redirect",
     "/redoc",
     "/openapi.json",
-    "/register",
-    "/login",
-    "/forgot-password",
-    "/reset-password"
+    "/favicon.ico",
+    "/api/auth/register",
+    "/api/auth/login",
+    "/api/auth/forgot-password",
+    "/api/auth/reset-password",
 }
 
 
