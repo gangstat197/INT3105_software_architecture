@@ -199,7 +199,6 @@ Mỗi attempt đọc **snapshot** để hiển thị/chấm; `quiz_card` chỉ l
 
 ## 4. API list
 
-Endpoint chẩn đoán public: `GET /api/health/models` kiểm tra đăng ký model và resolve quan hệ ORM; `GET /api/health/db` chạy `SELECT 1` qua session, trả `503` khi database không khả dụng. Hai endpoint không ghi dữ liệu và không kiểm tra schema đã migrate.
 
 Các path dưới đây là contract dự kiến. Multiple choice và fill dùng cùng nhóm `/api/quizzes`. Mọi path ngoài auth public đều kiểm tra owner như Mục 1.1.
 
