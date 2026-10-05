@@ -231,3 +231,12 @@ Các path dưới đây là contract dự kiến. Multiple choice và fill dùng
 | Statistics | GET | `/api/statistics` | Tổng quan của user |
 
 Frontend kiểm tra số câu và lựa chọn trước khi gửi để hỗ trợ user; backend kiểm tra attempt thuộc quiz, `card_id` khớp đúng bộ câu hỏi, và đáp án multiple choice thuộc options của câu đó. Request sai không được ghi kết quả một phần. Submit khóa/kiểm tra attempt trong transaction và chỉ chấp nhận khi `completed_at IS NULL`; request sau khi hoàn thành trả `409 Conflict` và không ghi lại score. Review với version cũ hoặc card chưa đến hạn cũng trả `409 Conflict`, không tăng box hay bộ đếm. Các path xem card sai và `/complete` trong đề xuất ban đầu được gộp vào GET attempt vì câu sai phụ thuộc vào **attempt**, không chỉ quiz.
+
+### Deck CRUD đã triển khai
+
+- Các endpoint deck yêu cầu Bearer JWT và user tồn tại trong database.
+- `POST /api/decks`: body `name` (1–255 ký tự), `description` tùy chọn; trả `201` với `deck_id`, `name`, `description`.
+- `GET /api/decks`: trả array deck của user hiện tại, sắp xếp theo `deck_id`.
+- GET/PATCH/DELETE theo ID: `404` nếu deck không tồn tại, `403` nếu không phải chủ.
+- PATCH chỉ sửa field được gửi; `description: null` xóa mô tả; `name: null` không hợp lệ.
+- DELETE trả `204`, cascade xóa card, quiz, câu hỏi, attempt và đáp án; giữ word và deck khác.

@@ -1,5 +1,3 @@
-"""Register all models so SQLAlchemy can resolve relationship names."""
-
 from .base import Base
 from .user import User, PasswordResetToken
 from .word import Word, WordMeaning, WordDefinition, WordSynonym, WordAntonym

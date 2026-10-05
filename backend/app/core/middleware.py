@@ -6,10 +6,15 @@ from backend.app.core.security import decode_access_token
 
 
 PUBLIC_PATHS = {
+    "/",
+    "/docs",
+    "/docs/oauth2-redirect",
+    "/redoc",
+    "/openapi.json",
     "/register",
     "/login",
     "/forgot-password",
-    "reset-password"
+    "/reset-password"
 }
 
 
