@@ -11,139 +11,139 @@ class DictionaryProviderError(Exception):
     """Base exception for dictionary provider errors."""
 
 
-class DictionaryProvider:
-    def __init__(self, timeout: float = 5.0) -> None:
-        self.timeout = timeout
+def lookup_provider(word: str, language: str="en", timeout: float=5.0) -> dict[str, Any] | None:
+    safe_language = quote(language, safe="")
+    safe_word = quote(word, safe="")
 
-    def lookup(self, word: str, language: str) -> dict[str, Any] | None:
-        safe_language = quote(language, safe="")
-        safe_word = quote(word, safe="")
+    url = f"{DICTIONARY_API_URL}/{safe_language}/{safe_word}"
 
-        url = f"{DICTIONARY_API_URL}/{safe_language}/{safe_word}"
+    try:
+        response = httpx.get(url, timeout=timeout)
+        response.raise_for_status()
 
-        try:
-            response = httpx.get(url, timeout=self.timeout)
-            response.raise_for_status()
+    except httpx.HTTPStatusError as exc:
+        if exc.response.status_code == 404:
+            return None
 
-        except httpx.HTTPStatusError as exc:
-            if exc.response.status_code == 404:
-                return None
+        raise DictionaryProviderError(
+            f"Dictionary provider returned HTTP {exc.response.status_code}"
+        ) from exc
 
-            raise DictionaryProviderError(
-                f"Dictionary provider returned HTTP {exc.response.status_code}"
-            ) from exc
+    except httpx.RequestError as exc:
+        raise DictionaryProviderError(
+            "Failed to contact dictionary provider"
+        ) from exc
 
-        except httpx.RequestError as exc:
-            raise DictionaryProviderError(
-                "Failed to contact dictionary provider"
-            ) from exc
+    try:
+        return response.json()
+    except ValueError as exc:
+        raise DictionaryProviderError(
+            "Invalid JSON response from dictionary provider"
+        ) from exc
 
-        try:
-            return response.json()
-        except ValueError as exc:
-            raise DictionaryProviderError(
-                "Invalid JSON response from dictionary provider"
-            ) from exc
 
-    def parse(self, data: dict[str, Any]) -> tuple[str, list[dict]]:
-        provider_word = data.get("word")
+def parse(data: dict[str, Any]) -> tuple[str, list[dict]]:
+    provider_word = data.get("word")
 
-        if not provider_word:
-            raise DictionaryProviderError("Dictionary response does not contain a word")
+    if not provider_word:
+        raise DictionaryProviderError("Dictionary response does not contain a word")
 
-        entries = data.get("entries")
+    entries = data.get("entries")
 
-        if not isinstance(entries, list):
-            raise DictionaryProviderError("Dictionary response does not contain entries")
+    if not isinstance(entries, list):
+        raise DictionaryProviderError("Dictionary response does not contain entries")
 
-        meanings: list[dict] = []
+    meanings: list[dict] = []
 
-        for entry in entries:
-            if not isinstance(entry, dict):
-                continue
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
 
-            part_of_speech = entry.get("partOfSpeech")
-            
-            pronunciation = self.extract_pronunciation(entry.get("pronunciations"))
-            definitions = self.extract_definitions(entry.get("senses"))
+        part_of_speech = entry.get("partOfSpeech")
+        
+        pronunciation = extract_pronunciation(entry.get("pronunciations"))
+        definitions = extract_definitions(entry.get("senses"))
 
-            if not definitions:
-                continue
+        if not definitions:
+            continue
 
-            meanings.append(
-                {
-                    "part_of_speech": part_of_speech,
-                    "ipa": pronunciation["ipa"],
-                    "audio": pronunciation["audio"],
-                    "definitions": definitions,
-                }
-            )
-
-        if not meanings:
-            raise DictionaryProviderError("Dictionary entry contains no definitions")
-
-        return provider_word, meanings
-
-    def extract_pronunciation(self, pronunciations: Any) -> dict[str, str | None]:
-        if not isinstance(pronunciations, list):
-            return {
-                "ipa": [], 
-                "audio": []
+        meanings.append(
+            {
+                "part_of_speech": part_of_speech,
+                "ipa": pronunciation["ipa"],
+                "audio": pronunciation["audio"],
+                "definitions": definitions,
             }
+        )
 
-        ipa_list: list[str] = []
-        audio_list: list[str] = []
+    if not meanings:
+        raise DictionaryProviderError("Dictionary entry contains no definitions")
 
-        for pronunciation in pronunciations:
-            if not isinstance(pronunciation, dict):
-                continue
-            if pronunciation.get("text"):
-                ipa_list.append(pronunciation["text"])
-            if pronunciation.get("audio"):
-                audio_list.append(pronunciation["audio"])
+    return provider_word, meanings
 
-        return {"ipa": ipa_list, "audio": audio_list}
 
-    def extract_definitions(self, definitions: Any) -> list[dict]:
-        if not isinstance(definitions, list):
-            return []
+def extract_pronunciation(pronunciations: Any) -> dict[str, str | None]:
+    if not isinstance(pronunciations, list):
+        return {
+            "ipa": [], 
+            "audio": []
+        }
 
-        result: list[dict] = []
+    ipa_list: list[str] = []
+    audio_list: list[str] = []
 
-        for definition_data in definitions:
-            if not isinstance(definition_data, dict):
-                continue
+    for pronunciation in pronunciations:
+        if not isinstance(pronunciation, dict):
+            continue
+        if pronunciation.get("text"):
+            ipa_list.append(pronunciation["text"])
+        if pronunciation.get("audio"):
+            audio_list.append(pronunciation["audio"])
 
-            definition = definition_data.get("definition")
+    return {"ipa": ipa_list, "audio": audio_list}
 
-            if not definition:
-                continue
 
-            example_list = []
-            examples = definition_data.get("examples", [])
+def extract_definitions(definitions: Any) -> list[dict]:
+    if not isinstance(definitions, list):
+        return []
 
-            if isinstance(examples, list):
-                for ex in examples:
-                    if isinstance(ex, str):
-                        example_list.append(ex)
-                    elif isinstance(ex, dict) and ex.get("text"):
-                        example_list.append(ex["text"])
+    result: list[dict] = []
 
-            synonyms = self.extract_related_words(definition_data.get("synonyms"))
-            antonyms = self.extract_related_words(definition_data.get("antonyms"))
+    for definition_data in definitions:
+        if not isinstance(definition_data, dict):
+            continue
 
-            result.append(
-                {
-                    "definition": definition,
-                    "examples": example_list,
-                    "synonyms": synonyms,
-                    "antonyms": antonyms,
-                }
-            )
+        definition = definition_data.get("definition")
 
-        return result
+        if not definition:
+            continue
 
-    def extract_related_words(self, values: Any) -> list[str]:
+        example_list = []
+        examples = definition_data.get("examples", [])
+
+        if isinstance(examples, list):
+            for ex in examples:
+                if isinstance(ex, str):
+                    example_list.append(ex)
+                elif isinstance(ex, dict) and ex.get("text"):
+                    example_list.append(ex["text"])
+
+        synonyms = extract_related_words(definition_data.get("synonyms"))
+        antonyms = extract_related_words(definition_data.get("antonyms"))
+
+        result.append(
+            {
+                "definition": definition,
+                "examples": example_list,
+                "synonyms": synonyms,
+                "antonyms": antonyms,
+            }
+        )
+
+    return result
+
+
+def extract_related_words(values: Any) -> list[str]:
         if not isinstance(values, list):
             return []
 
