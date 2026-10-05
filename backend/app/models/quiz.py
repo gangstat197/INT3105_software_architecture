@@ -88,5 +88,5 @@ class Attempt(Base):
 
     quiz_cards: Mapped[List["QuizCard"]] = relationship(
         back_populates="attempt",
-        cascade="all, delete-orphan",
+        passive_deletes="all",
     )

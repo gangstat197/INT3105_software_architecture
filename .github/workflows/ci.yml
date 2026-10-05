@@ -25,6 +25,7 @@ jobs:
           --health-retries 10
 
     env:
+      JWT_SECRET: ci-test-secret-only-not-for-production
       DATABASE_URL: postgresql+psycopg://test:test@localhost:5432/flashcards_test
 
     steps:
