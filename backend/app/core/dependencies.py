@@ -1,11 +1,11 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from backend.app.db.session import get_db
 from backend.app.models.user import User
 from backend.app.core.security import decode_access_token
+from backend.app.repositories.user import get_user_by_id
 
 
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -45,9 +45,7 @@ def get_current_user(
             detail="Invalid token",
         )
 
-    user = db.scalar(
-        select(User).where(User.user_id == user_id)
-    )
+    user = get_user_by_id(db, user_id)
 
     if user is None:
         raise HTTPException(

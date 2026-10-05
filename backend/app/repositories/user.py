@@ -21,6 +21,14 @@ def get_user_by_email(db: Session, email: str) -> User | None:
         select(User).where(User.email == email)
     )
 
+def get_user_by_email_for_update(db: Session, email: str) -> User | None:
+    return db.scalar(
+        select(User)
+        .where(User.email == email)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+
 
 def create_user(
     db: Session,
@@ -49,7 +57,5 @@ def update_user_password(
     user.password_hash = password_hash
 
     db.add(user)
-    db.commit()
-    db.refresh(user)
 
     return user

@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from backend.app.main import app
 
 
-def test_health_endpoints_removed():
+def test_health():
     with TestClient(app) as client:
         for path in ("/api/health/models", "/api/health/db"):
             assert client.get(path).status_code == 404
