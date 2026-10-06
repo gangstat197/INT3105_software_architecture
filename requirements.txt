@@ -9,4 +9,5 @@ httpx==0.28.1
 pytest==9.1.1
 passlib==1.7.4
 bcrypt==4.0.1
+httpx==0.28.1
 resend==2.49.0
