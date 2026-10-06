@@ -7,7 +7,7 @@ from ..schemas.statistics import DeckStatisticsResponse
 
 
 def get_deck_statistics(
-        db: Session, deck_id: int, user_id: int
+        db: Session, user_id: int, deck_id: int
 ) -> DeckStatisticsResponse:
     deck = repository.get_deck_by_id(db, deck_id)
 
@@ -34,7 +34,8 @@ def get_deck_statistics(
 
 
     return DeckStatisticsResponse(
-        deck_id = deck.deck.id,
+        deck_id = deck.deck_id,
+        deck_name = deck.name,
         total_cards = stats.total_cards,
         progress =  progress,
         review_accuracy = review_accuracy,

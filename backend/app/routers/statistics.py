@@ -25,4 +25,4 @@ def get_deck_statistics(
     db: Database,
     user: CurrentUser,
 ):
-    return service.get_deck_statistics(db, user.user_id, deck_id)
+    return service.get_deck_statistics(db, user_id=user.user_id, deck_id=deck_id)
