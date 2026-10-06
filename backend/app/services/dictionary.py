@@ -1,7 +1,7 @@
 from backend.app.schemas.dictionary import *
 from sqlalchemy.orm import Session
 from backend.app.db.session import get_db
-from dictionary_provider import lookup_provider, parse
+from .dictionary_provider import lookup_provider, parse
 from backend.app.repositories.word import get_word_by_normalized_word, create_word
 import unicodedata
 import string
@@ -21,7 +21,7 @@ def lookup(db: Session, word: str, language: str) -> WordLookupResult:
     existing_word = get_word_by_normalized_word(db, normalized_word, language)
 
     if existing_word:
-        return existing_word
+        return WordFound(word=existing_word)
 
     data = lookup_provider(
         word=word, 
