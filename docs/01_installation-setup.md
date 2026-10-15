@@ -35,6 +35,8 @@ Trên Windows PowerShell, dùng `Copy-Item .env.example .env` thay lệnh `cp`. 
 
 Compose cấp `DATABASE_URL` cho API với hostname `db` trong mạng nội bộ.
 
+`DICTIONARY_API_URL` trong `.env` cấu hình URL gốc của dictionary (mặc định trong `.env.example`: `https://freedictionaryapi.com/api/v1/entries`). Sau khi đổi biến môi trường, chạy `docker compose up -d api` để áp dụng.
+
 Lệnh `python -m backend.app.db.init_db` tạo các bảng còn thiếu và giữ dữ liệu hiện có. Chạy lệnh này trước khi thử API trên database mới. Lệnh không cập nhật cấu trúc của bảng đã tồn tại; thay đổi schema cần migration.
 
 ## 4. Lệnh dùng khi phát triển

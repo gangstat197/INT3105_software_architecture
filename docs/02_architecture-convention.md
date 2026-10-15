@@ -35,9 +35,9 @@ Stack: Python/FastAPI, SQLAlchemy, PostgreSQL 17 và Docker Compose. Phiên bả
 
 Quy ước box: 5 box với khoảng chờ tương ứng **1, 3, 7, 14, 30 ngày**.
 
-1. Card mới được đặt ở box 1; `last_reviewed_at` và `next_review_date` được khởi tạo là `NULL`.
+1. Card mới được đặt ở box 1; `last_reviewed_at` và `next_reviewed_date` được khởi tạo là `NULL`.
 2. Đề xuất tối đa 20 card đang hoạt động: card overdue for review trước, theo ngày đến hạn cũ nhất; đến card chưa được review. Response kèm `review_version` của mỗi card.
-3. User xem đáp án rồi tự đánh dấu đúng/sai. Đúng tăng một box (tối đa box 5); sai về box 1. Cập nhật `last_reviewed_at = now` và `next_review_date = now + interval(box mới)`.
+3. User xem đáp án rồi tự đánh dấu đúng/sai. Đúng tăng một box (tối đa box 5); sai về box 1. Cập nhật `last_reviewed_at = now` và `next_reviewed_date = now + interval(box mới)`.
 4. Không lưu lịch sử từng lần review. Card giữ `review_total_count`, `review_correct_count` và `review_version` (bắt đầu từ 0). Request gửi `expected_review_version`, backend cập nhật có điều kiện ngay tại database khi version còn khớp **và card còn đến hạn**, rồi tăng version cùng box, ngày review, bộ đếm trong một transaction.
 5. Request cũ/gửi lặp không được tính lần hai.
 
@@ -120,7 +120,7 @@ erDiagram
         string notes
         int progress_level
         datetime last_reviewed_at
-        datetime next_review_date
+        datetime next_reviewed_date
         int review_total_count
         int review_correct_count
         int review_version

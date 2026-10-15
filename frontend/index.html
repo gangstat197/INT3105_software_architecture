@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flashcards · API playground</title>
+  </head>
+  <body>
+    <fieldset id="controls">
+      <header>
+        <div><h1>Flashcards</h1><p>Giao diện nhỏ để thử API</p></div>
+        <div id="session" hidden><span id="username"></span> <button id="logout" type="button">Đăng xuất</button></div>
+      </header>
+      <p id="status" role="status" aria-live="polite">Backend: localhost:8000 · API cần chạy trước.</p>
+      <section id="auth" class="panel narrow">
+        <h2>Tài khoản</h2>
+        <form id="auth-form" class="stack">
+          <label>Username<input name="username" required autocomplete="username" /></label>
+          <label>Email <small>(khi đăng ký)</small><input name="email" type="email" autocomplete="email" /></label>
+          <label>Password<input name="password" type="password" required autocomplete="current-password" /></label>
+          <div class="row"><button type="submit" name="action" value="login">Đăng nhập</button><button type="submit" name="action" value="register" class="secondary">Đăng ký</button></div>
+        </form>
+      </section>
+      <main id="app" hidden>
+        <aside class="panel">
+          <div class="row spread"><h2>Decks</h2><button id="refresh-decks" type="button" class="secondary">Tải lại</button></div>
+          <form id="create-deck" class="stack">
+            <label>Tên deck<input name="name" required maxlength="255" /></label>
+            <button type="submit">Tạo deck</button>
+          </form>
+          <nav id="decks" aria-label="Danh sách deck"></nav>
+        </aside>
+        <div class="stack">
+          <section class="panel">
+            <h2 id="deck-title">Chọn hoặc tạo deck</h2>
+            <div id="deck-content" hidden>
+              <form id="edit-deck" class="stack">
+                <label>Tên deck<input name="name" required maxlength="255" /></label>
+                <label>Mô tả<textarea name="description" rows="2"></textarea></label>
+                <div class="row"><button type="submit" class="secondary">Lưu deck</button><button id="delete-deck" type="button" class="danger">Xóa deck</button></div>
+              </form>
+              <hr />
+              <form id="add-card" class="stack">
+                <div class="row"><label class="grow">Từ cần học<input name="word" required maxlength="255" /></label><label>Ngôn ngữ<input name="language" value="en" required maxlength="10" size="4" /></label></div>
+                <label>Ghi chú<input name="notes" /></label>
+                <button type="submit">Thêm card</button>
+              </form>
+              <div class="row spread"><h3>Cards</h3><button id="refresh-cards" type="button" class="secondary">Tải lại</button></div>
+              <div id="cards" class="stack"></div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="row spread"><h2>Ôn tập</h2><button id="load-reviews" type="button">Lấy card đến hạn</button></div>
+            <p class="muted">Tối đa 20 card trên tất cả deck. Xem đáp án rồi đánh dấu đúng/sai.</p>
+            <div id="reviews" class="stack"></div>
+          </section>
+        </div>
+      </main>
+    </fieldset>
+    <details class="panel"><summary>Response API gần nhất</summary><pre id="response">Chưa có request.</pre></details>
+    <script type="module" src="/src.js"></script>
+  </body>
+</html>
