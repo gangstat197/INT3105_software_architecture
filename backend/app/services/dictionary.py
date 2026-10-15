@@ -16,6 +16,7 @@ def normalize_word(word: str) -> str:
 
 
 def lookup(db: Session, word: str, language: str) -> WordLookupResult:
+    """Find or stage a word; the calling service commits the transaction."""
     normalized_word = normalize_word(word)
 
     existing_word = get_word_by_normalized_word(db, normalized_word, language)
@@ -40,7 +41,5 @@ def lookup(db: Session, word: str, language: str) -> WordLookupResult:
         language=language,
         meanings=meanings,
     )
-
-    db.commit()
 
     return WordFound(word=word_model)

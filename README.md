@@ -36,6 +36,18 @@ docker compose exec api python -m backend.app.db.init_db
 
 Mở [Swagger UI](http://localhost:8000/docs) để thử API. Dừng service bằng `docker compose down`.
 
+## Frontend đơn giản test API
+
+Chạy backend bằng Docker như trên, sau đó mở terminal khác (Node.js 22.12+):
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Mở URL Vite hiển thị (`http://localhost:5173`). Đăng ký/đăng nhập để thử tạo/sửa/xóa deck, thêm/sửa/chuyển/xóa card và ôn tập. Giao diện có response API để xem lỗi. Vite proxy `/api` sang `http://127.0.0.1:8000`.
+
 ## Tài liệu
 
 - [Cài đặt và chạy project](docs/01_installation-setup.md)
