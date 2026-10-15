@@ -35,9 +35,9 @@ Stack: Python/FastAPI, SQLAlchemy, PostgreSQL 17 và Docker Compose. Phiên bả
 
 Quy ước box: 5 box với khoảng chờ tương ứng **1, 3, 7, 14, 30 ngày**.
 
-1. Card mới được đặt ở box 1; `last_reviewed_at` và `next_review_date` được khởi tạo là `NULL`.
+1. Card mới được đặt ở box 1; `last_reviewed_at` và `next_reviewed_date` được khởi tạo là `NULL`.
 2. Đề xuất tối đa 20 card đang hoạt động: card overdue for review trước, theo ngày đến hạn cũ nhất; đến card chưa được review. Response kèm `review_version` của mỗi card.
-3. User xem đáp án rồi tự đánh dấu đúng/sai. Đúng tăng một box (tối đa box 5); sai về box 1. Cập nhật `last_reviewed_at = now` và `next_review_date = now + interval(box mới)`.
+3. User xem đáp án rồi tự đánh dấu đúng/sai. Đúng tăng một box (tối đa box 5); sai về box 1. Cập nhật `last_reviewed_at = now` và `next_reviewed_date = now + interval(box mới)`.
 4. Không lưu lịch sử từng lần review. Card giữ `review_total_count`, `review_correct_count` và `review_version` (bắt đầu từ 0). Request gửi `expected_review_version`, backend cập nhật có điều kiện ngay tại database khi version còn khớp **và card còn đến hạn**, rồi tăng version cùng box, ngày review, bộ đếm trong một transaction.
 5. Request cũ/gửi lặp không được tính lần hai.
 
@@ -120,7 +120,7 @@ erDiagram
         string notes
         int progress_level
         datetime last_reviewed_at
-        datetime next_review_date
+        datetime next_reviewed_date
         int review_total_count
         int review_correct_count
         int review_version
@@ -240,3 +240,32 @@ Frontend kiểm tra số câu và lựa chọn trước khi gửi để hỗ tr�
 - GET/PATCH/DELETE theo ID: `404` nếu deck không tồn tại, `403` nếu không phải chủ.
 - PATCH chỉ sửa field được gửi; `description: null` xóa mô tả; `name: null` không hợp lệ.
 - DELETE trả `204`, cascade xóa card, quiz, câu hỏi, attempt và đáp án; giữ word và deck khác.
+
+
+### Card CRUD đã triển khai
+
+- Giữ nguyên ORM model hiện tại, bao gồm tên `next_reviewed_date`; không thêm migration.
+- Mọi endpoint card/review yêu cầu Bearer JWT. Resource không tồn tại trả `404`; khác owner trả `403`.
+- `POST /api/decks/{deck_id}/cards`: body `{"word": "apple", "language": "en", "notes": "ghi chú"}`; `language` mặc định `en`, `notes` tùy chọn. Word/language được trim và kiểm tra độ dài. Word rỗng sau normalize trả `422`.
+- Tái sử dụng word theo normalized word + language. Nếu chưa có, gọi dictionary và lưu word cùng card trong một transaction; dictionary service không tự commit. Không tìm thấy từ trả `404` với detail `Word Not Found`; lỗi provider trả `502`, không tạo card. Không retry hoặc dùng nguồn dự phòng.
+- Tạo thành công trả `201`. Response gồm ID, notes, dữ liệu word lồng nhau (meanings, IPA/audio, definitions, example, synonyms/antonyms), box, lịch ôn, bộ đếm và version.
+- Card mới: `progress_level = 1`, hai ngày review là `null`, các bộ đếm và version bằng `0`.
+- `GET /api/decks/{deck_id}/cards`: trả array card theo `card_id`, deck rỗng trả `[]`.
+- `PATCH /api/cards/{card_id}`: body chỉ sửa `notes` và/hoặc `deck_id`. `notes: null` xóa ghi chú; field không gửi được giữ nguyên; `deck_id: null` hoặc ID không dương trả `422`. Kiểm tra owner cả deck nguồn và đích. Không đổi word hoặc reset tiến độ khi chuyển deck. Trả `200` với card sau cập nhật.
+- Chưa áp dụng quy tắc cấm trùng word trong cùng deck; mỗi POST hợp lệ tạo một card.
+- `DELETE /api/cards/{card_id}`: trả `204`, giữ word và quiz snapshot cũ.
+
+### Review Leitner đã triển khai
+
+- `GET /api/reviews/due`: tối đa 20 card của user trên tất cả deck. Card có `next_reviewed_date <= now` đứng trước, hạn cũ nhất trước; tiếp theo là card có lịch `null`. Cùng hạn sắp xếp theo `card_id`. Model hiện tại không có trạng thái active/archive nên dùng mọi card còn tồn tại.
+- Response dùng cùng schema card và có `review_version` để frontend gửi khi review.
+- `POST /api/reviews/{card_id}`: body `{"is_correct": true, "expected_review_version": 0}`. `is_correct` phải là boolean, version là số nguyên không âm.
+- Đúng tăng box, tối đa 5; sai về box 1. Khoảng chờ theo box mới là 1/3/7/14/30 ngày, lấy từ config Leitner hiện có. Dùng thời gian UTC.
+- Một câu UPDATE có điều kiện kiểm tra ownership, version và card vẫn đến hạn; đồng thời cập nhật box, ngày, tăng total count, correct count (nếu đúng) và version. Commit một lần.
+- Version cũ hoặc card chưa đến hạn trả `409`, không cập nhật bộ đếm. Thành công trả `200` với card sau review. Không lưu lịch sử từng lượt và không thay đổi quiz.
+
+### Kiểm tra card/review
+
+- Ngày 15/10/2026: đã kiểm tra trên Docker Compose (Python 3.12, PostgreSQL 17).
+- Smoke test qua HTTP thật: **39 kiểm tra pass**, gồm đăng ký/đăng nhập, tạo deck, dictionary thật và cache, CRUD/chuyển card, validation, quyền truy cập, card đến hạn, lịch review, request cũ và chưa đến hạn.
+- Gửi hai request review đồng thời vào PostgreSQL với cùng version: một request trả `200`, request còn lại trả `409`; total count và version chỉ tăng một lần. Tài khoản, deck, card và word mới không còn được dùng do smoke test tạo ra đã được dọn sau test.

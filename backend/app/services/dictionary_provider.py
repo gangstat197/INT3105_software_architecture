@@ -3,8 +3,7 @@ from typing import Any
 from urllib.parse import quote
 import httpx
 
-
-DICTIONARY_API_URL = "https://freedictionaryapi.com/api/v1/entries"
+from ..core.config import settings
 
 
 class DictionaryProviderError(Exception):
@@ -15,7 +14,7 @@ def lookup_provider(word: str, language: str="en", timeout: float=5.0) -> dict[s
     safe_language = quote(language, safe="")
     safe_word = quote(word, safe="")
 
-    url = f"{DICTIONARY_API_URL}/{safe_language}/{safe_word}"
+    url = f"{settings.DICTIONARY_API_URL}/{safe_language}/{safe_word}"
 
     try:
         response = httpx.get(url, timeout=timeout)
