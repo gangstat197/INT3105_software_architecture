@@ -1,0 +1,51 @@
+from datetime import datetime
+
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
+
+from ..models.card import Card
+from ..models.deck import Deck
+from ..models.quiz import Attempt, Quiz, QuizCard, QuizQuestion
+from ..models.word import Word, WordDefinition, WordMeaning, WordSynonym
+
+def list_card_examples(db: Session, deck_id: int):
+    """Every (card, word, example) row in the deck whose example mentions the word."""
+    stmt = (
+        select(Card.card_id, Word.word_id, Word.word, Word.language, WordDefinition.example)
+        .join(Word, Card.word_id == Word.word_id)
+        .join(WordMeaning, WordMeaning.word_id == Word.word_id)
+        .join(WordDefinition, WordDefinition.word_meaning_id == WordMeaning.word_meaning_id)
+        .where(
+            Card.deck_id == deck_id,
+            WordDefinition.example.ilike(func.concat("%", Word.word, "%")),
+        )
+    )
+    return db.execute(stmt).all()
+
+
+def list_distractor_words(db: Session, word_id: int, word: str, language: str, limit: int = 10) -> list[str]:
+    """Random words of the same language that are neither the target word nor its synonyms."""
+    synonyms = (
+        select(func.lower(WordSynonym.word))
+        .join(WordDefinition, WordSynonym.word_definition_id == WordDefinition.word_definition_id)
+        .join(WordMeaning, WordDefinition.word_meaning_id == WordMeaning.word_meaning_id)
+        .where(WordMeaning.word_id == word_id)
+    )
+    stmt = (
+        select(Word.word)
+        .where(
+            Word.word_id != word_id,
+            Word.language == language,
+            func.lower(Word.word) != word.lower(),
+            func.lower(Word.word).not_in(synonyms),
+        )
+        .order_by(func.random())
+        .limit(limit)
+    )
+    return list(db.scalars(stmt))
+
+
+def create(db: Session, deck_id: int, quiz_type: str, questions: list[QuizQuestion]) -> Quiz:
+    quiz = Quiz(deck_id=deck_id, quiz_type=quiz_type, quiz_questions=questions)
+    db.add(quiz)
+    return quiz
