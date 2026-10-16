@@ -88,3 +88,15 @@ def create_quiz(db: Session, user_id: int, deck_id: int, quiz_type: QuizCreate):
     db.refresh(quiz)
     return quiz
 
+
+def list_quizzes(db: Session, user_id: int, quiz_type: str | None) -> list[Quiz]:
+    return repository.list_by_user(db, user_id, quiz_type)
+
+
+def get_quiz(db: Session, user_id: int, quiz_id: int):
+    quiz = repository.get_quiz_by_id(db, quiz_id)
+    if quiz is None:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    if quiz.deck.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not the quiz owner")
+    return

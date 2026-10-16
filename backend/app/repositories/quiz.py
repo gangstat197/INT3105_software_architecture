@@ -49,3 +49,18 @@ def create(db: Session, deck_id: int, quiz_type: str, questions: list[QuizQuesti
     quiz = Quiz(deck_id=deck_id, quiz_type=quiz_type, quiz_questions=questions)
     db.add(quiz)
     return quiz
+
+
+def list_by_user(db: Session, user_id: int, quiz_type: str | None):
+    stmt = (
+        select(Quiz)
+        .join(Deck, Quiz.deck_id == Deck.deck_id)
+        .where(Deck.user_id == user_id)
+    )
+
+    if quiz_type is not None:
+        stmt = stmt.where(Quiz.quiz_type == quiz_type)
+    return list(db.scalars(statement=stmt.order_by(Quiz.quiz_id)))
+
+def get_quiz_by_id(db: Session, quiz_id: int) -> Quiz | None:
+    return db.get(Quiz, quiz_id)

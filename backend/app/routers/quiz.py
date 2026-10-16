@@ -12,12 +12,12 @@ from ..schemas.quiz import (
     # AttemptSummary,
     QuizCreate,
     QuizDetailResponse,
-    # QuizSummary,
+    QuizViewSummary,
     QuizType,
 )
 from ..services import quiz as service
 
-router = APIRouter(tags=["quizzes"])
+router = APIRouter(tags=["Quizzes"])
 Database = Annotated[Session, Depends(get_db)]
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
@@ -27,9 +27,9 @@ def create_quiz(deck_id: int, data: QuizCreate, db: Database, user: CurrentUser)
     return service.create_quiz(db, user.user_id, deck_id, data.quiz_type)
 
 
-# @router.get("/api/quizzes", response_model=list[QuizSummary])
-# def list_quizzes(db: Database, user: CurrentUser, quiz_type: QuizType):
-#     return service.list_quizzes(db, user.user_id, quiz_type)
+@router.get("/api/quizzes", response_model=list[QuizViewSummary])
+def list_quizzes(db: Database, user: CurrentUser, quiz_type: QuizType):
+    return service.list_quizzes(db, user.user_id, quiz_type)
 
 
 @router.get("/api/quizzes/{quiz_id}", response_model=QuizDetailResponse)
