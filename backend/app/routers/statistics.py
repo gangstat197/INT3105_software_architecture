@@ -6,8 +6,9 @@ from sqlalchemy.orm import Session
 from ..core.dependencies import get_current_user
 from ..db.session import get_db
 from ..models.user import User
-from ..schemas.statistics import DeckStatisticsResponse
+from ..schemas.statistics import DeckStatisticsResponse, QuizStatisticsResponse
 from ..services import statistics as service
+from ..schemas.statistics import UserStatisticsResponse
 
 
 router = APIRouter(prefix="/api", tags=["Statistics"])
@@ -26,3 +27,24 @@ def get_deck_statistics(
     user: CurrentUser,
 ):
     return service.get_deck_statistics(db, user_id=user.user_id, deck_id=deck_id)
+
+
+@router.get(
+    "/quizzes/{quiz_id}/statistics",
+    response_model=QuizStatisticsResponse,
+)
+def get_quiz_statistics(
+    quiz_id: int,
+    db: Database,
+    user: CurrentUser,
+):
+    return service.get_quiz_statistics(
+        db,
+        user_id=user.user_id,
+        quiz_id=quiz_id,
+    )
+
+
+@router.get("/statistics", response_model=UserStatisticsResponse)
+def get_user_statistics(db: Database, user: CurrentUser):
+    return service.get_user_statistics(db, user_id=user.user_id)
