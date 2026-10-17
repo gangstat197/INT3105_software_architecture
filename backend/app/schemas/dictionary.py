@@ -5,8 +5,8 @@ from backend.app.models.word import Word
 
 @dataclass
 class WordFound:
-    status: Literal["found"] = "found"
     word: Word
+    status: Literal["found"] = "found"
 
 
 @dataclass
