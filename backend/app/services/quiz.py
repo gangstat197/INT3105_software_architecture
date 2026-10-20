@@ -99,4 +99,4 @@ def get_quiz(db: Session, user_id: int, quiz_id: int):
         raise HTTPException(status_code=404, detail="Quiz not found")
     if quiz.deck.user_id != user_id:
         raise HTTPException(status_code=403, detail="Not the quiz owner")
-    return
+    return quiz
