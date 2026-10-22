@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from ..models.card import Card
 from ..models.deck import Deck
-from ..models.quiz import Attempt, Quiz, QuizCard, QuizQuestion
+from ..models.quiz import Attempt, Quiz, QuizQuestion
 from ..models.word import Word, WordDefinition, WordMeaning, WordSynonym
 
 def list_card_examples(db: Session, deck_id: int):
@@ -64,3 +64,17 @@ def list_by_user(db: Session, user_id: int, quiz_type: str | None):
 
 def get_quiz_by_id(db: Session, quiz_id: int) -> Quiz | None:
     return db.get(Quiz, quiz_id)
+
+
+def list_attempt(db: Session, quiz_id: int):
+    stmt = (
+        select(Attempt)
+        .where(Attempt.quiz_id == quiz_id)
+        .order_by(Attempt.attempt_id)
+    )
+    return list(db.scalars(statement=stmt))
+
+def create_attempt(db: Session, quiz_id: int, started_at: datetime) -> Attempt:
+    attempt = Attempt(quiz_id=quiz_id, started_at=started_at)
+    db.add(attempt)
+    return attempt

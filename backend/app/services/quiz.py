@@ -3,7 +3,9 @@ import re
 from collections import defaultdict
 from datetime import datetime, timezone
 
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
+
 from ..models.quiz import (
     Attempt,
     Quiz,
@@ -11,10 +13,13 @@ from ..models.quiz import (
     QuizQuestion
 )
 from ..schemas.quiz import (
-    QuizCreate
+    QuizCreate,
+    QuestionResult,
+    QuizQuestionPublic,
+    AttemptResponse,
+    AttemptSummary,
 )
 
-from fastapi import HTTPException
 from . import deck as deck_service
 from ..repositories import quiz as repository
 
@@ -100,3 +105,57 @@ def get_quiz(db: Session, user_id: int, quiz_id: int):
     if quiz.deck.user_id != user_id:
         raise HTTPException(status_code=403, detail="Not the quiz owner")
     return quiz
+
+def list_attempt(db: Session, user_id: int, quiz_id: int) -> list[Attempt]:
+    get_quiz(db=db, user_id=user_id, quiz_id=quiz_id)
+    attempts = repository.list_attempt(db, quiz_id=quiz_id)
+    return attempts
+
+def get_attempt(db, user_id, quiz_id, attempt_id):
+    quiz = get_quiz(db, user_id, quiz_id)
+    attempt = ...  # 404 if missing
+    if attempt.completed_at is None:
+        return attempt_with_questions(quiz, attempt)
+    return attempt_with_results(quiz, attempt)
+
+def start_attempt(db: Session, user_id: int, quiz_id: int):
+    quiz = get_quiz(db=db, user_id=user_id, quiz_id=quiz_id)
+    attempt = repository.create_attempt(db, quiz_id, datetime.now(timezone.utc))
+    db.commit()
+    db.refresh(attempt)
+    return attempt_with_questions(quiz, attempt)
+
+def attempt_with_questions(quiz: Quiz, attempt: Attempt) -> AttemptResponse:
+    summary = Attempt.model_validate(attempt).model_dump()
+    questions = []
+
+    for question in quiz.quiz_questions:
+        questions.append(QuizQuestionPublic.model_validate(question))
+
+    return AttemptResponse(**summary, total_questions=len(questions), questions=questions)
+
+
+def attempt_with_results(quiz: Quiz, attempt: Attempt) -> AttemptResponse:
+    summary = Attempt.model_validate(attempt).model_dump()
+
+    questions_by_card = {}
+    # index questions by card
+    # {i: <some question>}
+    for question in quiz.quiz_questions:
+        questions_by_card[question.card_id] = question
+    
+    wrong = []
+    for quiz_card in attempt.quiz_cards:
+        if quiz_card.is_correct:
+            continue
+        # look up the card id of the wrong card saved in the questions dict above
+        # add result with original question + user answer + correct answer
+        question = questions_by_card[quiz_card.card_id]
+        wrong.append(QuestionResult(
+            card_id=quiz_card.card_id,
+            prompt_snapshot=question.prompt_snapshot,
+            options_snapshot=question.options_snapshot,
+            user_answer=quiz_card.user_answer,
+            correct_answer=question.answer_snapshot,
+        ))
+    return AttemptResponse(**summary, total_questions=len(questions_by_card), wrong_questions=wrong)
