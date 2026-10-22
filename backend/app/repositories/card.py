@@ -1,102 +1,73 @@
 from datetime import datetime
 
-from sqlalchemy import case, or_, select, update
+from sqlalchemy import or_, select, update
 from sqlalchemy.orm import Session, selectinload
 
-from backend.app.models.card import Card
-from backend.app.models.deck import Deck
-from backend.app.models.word import Word, WordMeaning, WordDefinition
+from ..models.card import Card
+from ..models.deck import Deck
+from ..models.word import Word, WordDefinition, WordMeaning
 
 
-def get_card_owner(db: Session, card_id: int) -> tuple[Card, int] | None:
-    row = db.execute(
-        select(Card, Deck.user_id)
-        .join(Deck, Deck.deck_id == Card.deck_id)
-        .where(Card.card_id == card_id)
-    ).first()
-
-    return (row[0], row[1]) if row else None
-
-
-def list_due_cards(db: Session, user_id: int, now: datetime, limit: int = 20) -> list[Card]:
-    stmt = (
-        select(Card)
-        .join(Deck, Deck.deck_id == Card.deck_id)
-        .where(
-            Deck.user_id == user_id,
-            or_(Card.last_reviewed_at.is_(None), Card.next_reviewed_date <= now),
-        )
-        .options(
-            selectinload(Card.word)
-            .selectinload(Word.meanings)
-            .selectinload(WordMeaning.definitions)
-            .selectinload(WordDefinition.synonyms),
-            
-            selectinload(Card.word)
-            .selectinload(Word.meanings)
-            .selectinload(WordMeaning.definitions)
-            .selectinload(WordDefinition.antonyms),
-        )
-        .order_by(
-            case((Card.next_reviewed_date.is_(None), 1), else_=0),
-            Card.next_reviewed_date.asc(),
-            Card.card_id.asc(),
-        )
-        .limit(min(max(limit, 1), 20))
+def word_options():
+    definitions = selectinload(Card.word).selectinload(Word.meanings).selectinload(WordMeaning.definitions)
+    return (
+        definitions.selectinload(WordDefinition.synonyms),
+        definitions.selectinload(WordDefinition.antonyms),
     )
 
-    return list(db.scalars(stmt).unique().all())
+
+def get_by_id(db: Session, card_id: int) -> Card | None:
+    return db.scalar(select(Card).where(Card.card_id == card_id).options(*word_options()))
 
 
-def submit_due_review(
-    db: Session,
-    card_id: int,
-    user_id: int,
-    expected_review_version: int,
-    is_correct: bool,
-    now: datetime,
-    next_review_date: datetime,
-    new_progress_level: int,
-) -> dict | None:
-    owns_card = select(Deck.deck_id).where(
-        Deck.deck_id == Card.deck_id,
-        Deck.user_id == user_id,
-    ).exists()
+def list_by_deck(db: Session, deck_id: int) -> list[Card]:
+    return list(db.scalars(
+        select(Card).where(Card.deck_id == deck_id)
+        .options(*word_options()).order_by(Card.card_id)
+    ))
 
-    due = or_(Card.last_reviewed_at.is_(None), Card.next_reviewed_date <= now)
-    
-    stmt = (
-        update(Card)
-        .where(
+
+def create(db: Session, deck_id: int, word_id: int, notes: str | None) -> Card:
+    card = Card(deck_id=deck_id, word_id=word_id, notes=notes)
+    db.add(card)
+    return card
+
+
+def delete(db: Session, card: Card) -> None:
+    db.delete(card)
+
+
+def due_condition(now: datetime):
+    return or_(Card.next_reviewed_date.is_(None), Card.next_reviewed_date <= now)
+
+
+def list_due(db: Session, user_id: int, now: datetime) -> list[Card]:
+    return list(db.scalars(
+        select(Card).join(Card.deck)
+        .where(Deck.user_id == user_id, due_condition(now))
+        .options(*word_options())
+        .order_by(Card.next_reviewed_date.asc().nulls_last(), Card.card_id)
+        .limit(20)
+    ))
+
+
+def record_review(
+    db: Session, card_id: int, user_id: int, expected_version: int,
+    is_correct: bool, level: int, now: datetime, next_date: datetime,
+) -> bool:
+    result = db.execute(
+        update(Card).where(
             Card.card_id == card_id,
-            owns_card,
-            Card.review_version == expected_review_version,
-            due,
-        )
-        .values(
-            progress_level=new_progress_level,
+            Card.deck_id.in_(select(Deck.deck_id).where(Deck.user_id == user_id)),
+            Card.review_version == expected_version,
+            due_condition(now),
+        ).values(
+            progress_level=level,
             last_reviewed_at=now,
-            next_reviewed_date=next_review_date,
-            review_version=Card.review_version + 1,
+            next_reviewed_date=next_date,
             review_total_count=Card.review_total_count + 1,
-            review_correct_count=Card.review_correct_count + (1 if is_correct else 0),
-        )
-        .returning(
-            Card.card_id,
-            Card.progress_level,
-            Card.next_reviewed_date,
-            Card.review_version,
-        )
+            review_correct_count=Card.review_correct_count + int(is_correct),
+            review_version=Card.review_version + 1,
+        ).execution_options(synchronize_session=False)
     )
-
-    row = db.execute(stmt).mappings().one_or_none()
-
-    if row is None:
-        return None
-    
-    return {
-        "card_id": row["card_id"],
-        "new_progress_level": row["progress_level"],
-        "next_review_date": row["next_reviewed_date"],
-        "review_version": row["review_version"],
-    }
+    return result.rowcount == 1
