@@ -17,7 +17,6 @@ from ..schemas.quiz import (
     QuestionResult,
     QuizQuestionPublic,
     AttemptResponse,
-    AttemptSummary,
 )
 
 from . import deck as deck_service
