@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from ..models.card import Card
 from ..models.deck import Deck
-from ..models.quiz import Attempt, Quiz, QuizQuestion
+from ..models.quiz import Attempt, Quiz, QuizQuestion, QuizCard
 from ..models.word import Word, WordDefinition, WordMeaning, WordSynonym
 
 def list_card_examples(db: Session, deck_id: int):
@@ -85,3 +85,6 @@ def create_attempt(db: Session, quiz_id: int, started_at: datetime) -> Attempt:
     attempt = Attempt(quiz_id=quiz_id, started_at=started_at)
     db.add(attempt)
     return attempt
+
+def add_answer(db: Session, answers: list[QuizCard]):
+    db.add_all(answers)

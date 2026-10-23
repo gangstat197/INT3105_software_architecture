@@ -2,12 +2,12 @@ import random
 import re
 from collections import defaultdict
 from datetime import datetime, timezone
-
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from ..models.quiz import (
     Quiz,
+    QuizCard,
     QuizQuestion
 )
 
@@ -32,7 +32,6 @@ def blank_word(example: str, word: str):
     prompt, count = pattern.subn("_____", example)
     return prompt if count else None
 
-
 def build_options(answer: str, distractors: list[str]) -> tuple[list[dict], str] | None:
     """Shuffle the answer with 3 distinct distractors once; returns (options, correct option id)."""
     seen = {answer.casefold()}
@@ -50,7 +49,6 @@ def build_options(answer: str, distractors: list[str]) -> tuple[list[dict], str]
     random.shuffle(words)
     options = [{"id": option_id, "text": text} for option_id, text in zip(OPTION_IDS, words)]
     return options, OPTION_IDS[words.index(answer)]
-
 
 def create_quiz(db: Session, user_id: int, deck_id: int, quiz_type: QuizCreate):
     deck_service.get_deck(db, user_id, deck_id)  # 404 / 403
@@ -93,10 +91,8 @@ def create_quiz(db: Session, user_id: int, deck_id: int, quiz_type: QuizCreate):
     db.refresh(quiz)
     return quiz
 
-
 def list_quizzes(db: Session, user_id: int, quiz_type: str | None) -> list[Quiz]:
     return repository.list_by_user(db, user_id, quiz_type)
-
 
 def get_quiz(db: Session, user_id: int, quiz_id: int):
     quiz = repository.get_quiz_by_id(db, quiz_id)
@@ -113,7 +109,7 @@ def list_attempt(db: Session, user_id: int, quiz_id: int) -> list[AttemptSummary
 
 def get_attempt(db, user_id, quiz_id, attempt_id):
     quiz = get_quiz(db, user_id, quiz_id)
-    attempt = repository.get_attempt_by_id(db, quiz_id, attempt_id)
+    attempt = get_attempt_or_404(db, quiz_id, attempt_id)
     if attempt.completed_at is None:
         return attempt_with_questions(quiz, attempt)
     return attempt_with_results(quiz, attempt)
@@ -158,3 +154,68 @@ def attempt_with_results(quiz: Quiz, attempt: AttemptSummary) -> AttemptResponse
             correct_answer=question.answer_snapshot,
         ))
     return AttemptResponse(**summary, total_questions=len(questions_by_card), wrong_questions=wrong)
+
+def get_attempt_or_404(db: Session, quiz_id: int, attempt_id: int, for_update: bool = False) -> AttemptSummary:
+    """
+    Helper function to check whether attempt exists
+    """
+    attempt = repository.get_attempt_by_id(db, quiz_id, attempt_id, for_update=for_update)
+    if attempt is None:
+        raise HTTPException(status_code=404, detail="Attempt not found")
+    return attempt
+
+def normalize_answer(question: QuizQuestion, user_answer: str) -> str:
+    answer = user_answer.strip()
+    return answer.upper() if question.options_snapshot is not None else answer
+
+def grade_answer(question: QuizQuestion, answer: str) -> bool:
+    if question.options_snapshot is None:
+        return answer.casefold() == question.answer_snapshot.casefold()
+    return answer == question.answer_snapshot
+
+def submit_attempt(db: Session, user_id: int, quiz_id: int, attempt_id: int, data: AttemptSubmit) -> AttemptResponse:
+    quiz = get_quiz(db, user_id, quiz_id)
+    attempt = get_attempt_or_404(db, quiz_id, attempt_id, for_update=True)
+    if attempt.completed_at is not None:
+        raise HTTPException(status_code=409, detail="Attempt already submitted")
+
+    questions = {}
+    for question in quiz.quiz_questions:
+        questions[question.card_id] = question
+
+    answers = {}
+    for answer in data.answers:
+        answers[answer.card_id] = answer.user_answer
+
+    if len(answers) != len(data.answers):
+        raise HTTPException(status_code=422, detail="Each card_id may only be answered once")
+    if answers.keys() != questions.keys():
+        raise HTTPException(status_code=422, detail="Answers must cover exactly the quiz's questions")
+
+    # validate everything before writing so a bad request records nothing
+    normalized = {}
+    for card_id, answer in answers.items():
+        normalized[card_id] = normalize_answer(questions[card_id], answer)
+
+    for card_id, answer in normalized.items():
+        options = questions[card_id].options_snapshot
+        if options is not None and answer not in {option["id"] for option in options}:
+            raise HTTPException(status_code=422, detail=f"Answer for card {card_id} is not one of its options")
+
+    results = []
+    for card_id, answer in normalized.items():
+        results.append(
+            QuizCard(
+                quiz_id=quiz_id,
+                attempt_id=attempt_id,
+                card_id=card_id,
+                user_answer=answer,
+                is_correct=grade_answer(questions[card_id], answer)
+            )
+        )
+    repository.add_answer(db, results)
+    attempt.score = sum(result.is_correct for result in results)
+    attempt.completed_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(attempt)
+    return attempt_with_results(quiz, attempt)

@@ -43,7 +43,7 @@ class QuestionResult(BaseModel):
     """A question the user got wrong, revealed only after submit"""
     card_id: int
     prompt_snapshot: str
-    options_snapshot: list[QuizOptionSnapshot] | None
+    options_snapshot: List[QuizOptionSnapshot] | None
     user_answer: str | None
     correct_answer: str
     
@@ -61,5 +61,9 @@ class AttemptResponse(AttemptSummary):
     questions: List[QuizQuestionPublic] | None = None
     wrong_questions: List[QuestionResult] | None = None
 
-class AttemptSubmit(AttemptSummary):
-    pass
+class Answer(BaseModel):
+    card_id: int
+    user_answer: str
+
+class AttemptSubmit(BaseModel):
+    answers: List[Answer]

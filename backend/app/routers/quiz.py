@@ -45,3 +45,7 @@ def start_attempt(quiz_id: int, db: Database, user: CurrentUser):
 @router.get("/api/quizzes/{quiz_id}/attempts/{attempt_id}", response_model=AttemptResponse)
 def get_attempt(quiz_id: int, attempt_id: int, db: Database, user: CurrentUser):
     return service.get_attempt(db, user.user_id, quiz_id, attempt_id)
+
+@router.post("/api/quizzes/{quiz_id}/attempts/{attempt_id}/submit", response_model=AttemptResponse)
+def submit_attempt(quiz_id: int, attempt_id: int, data: AttemptSubmit, db: Database, user: CurrentUser):
+    return service.submit_attempt(db, user.user_id, quiz_id, attempt_id, data)
