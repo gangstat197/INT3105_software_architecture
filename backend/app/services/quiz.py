@@ -113,7 +113,7 @@ def list_attempt(db: Session, user_id: int, quiz_id: int) -> list[AttemptSummary
 
 def get_attempt(db, user_id, quiz_id, attempt_id):
     quiz = get_quiz(db, user_id, quiz_id)
-    attempt = ...  # 404 if missing
+    attempt = repository.get_attempt_by_id(db, quiz_id, attempt_id)
     if attempt.completed_at is None:
         return attempt_with_questions(quiz, attempt)
     return attempt_with_results(quiz, attempt)

@@ -65,7 +65,14 @@ def list_by_user(db: Session, user_id: int, quiz_type: str | None):
 def get_quiz_by_id(db: Session, quiz_id: int) -> Quiz | None:
     return db.get(Quiz, quiz_id)
 
-
+def get_attempt_by_id(db: Session, quiz_id:int, attempt_id: int, for_update: bool = False) -> Attempt | None:
+    stmt = select(Attempt).where(Attempt.attempt_id == attempt_id, Attempt.quiz_id == quiz_id)
+    if for_update:
+        # row lock so two concurrent submits can't both see completed_at is null
+        # if user double clicks submit
+        stmt = stmt.with_for_update().execution_options(populate_existing=True)
+    return db.scalars(stmt).first()
+    
 def list_attempt(db: Session, quiz_id: int):
     stmt = (
         select(Attempt)
