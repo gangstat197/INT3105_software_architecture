@@ -7,16 +7,17 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from ..models.quiz import (
-    Attempt,
     Quiz,
-    QuizCard,
     QuizQuestion
 )
+
 from ..schemas.quiz import (
     QuizCreate,
     QuestionResult,
     QuizQuestionPublic,
     AttemptResponse,
+    AttemptSummary,
+    AttemptSubmit
 )
 
 from . import deck as deck_service
@@ -105,7 +106,7 @@ def get_quiz(db: Session, user_id: int, quiz_id: int):
         raise HTTPException(status_code=403, detail="Not the quiz owner")
     return quiz
 
-def list_attempt(db: Session, user_id: int, quiz_id: int) -> list[Attempt]:
+def list_attempt(db: Session, user_id: int, quiz_id: int) -> list[AttemptSummary]:
     get_quiz(db=db, user_id=user_id, quiz_id=quiz_id)
     attempts = repository.list_attempt(db, quiz_id=quiz_id)
     return attempts
@@ -124,8 +125,8 @@ def start_attempt(db: Session, user_id: int, quiz_id: int):
     db.refresh(attempt)
     return attempt_with_questions(quiz, attempt)
 
-def attempt_with_questions(quiz: Quiz, attempt: Attempt) -> AttemptResponse:
-    summary = Attempt.model_validate(attempt).model_dump()
+def attempt_with_questions(quiz: Quiz, attempt: AttemptSummary) -> AttemptResponse:
+    summary = AttemptSummary.model_validate(attempt).model_dump()
     questions = []
 
     for question in quiz.quiz_questions:
@@ -133,9 +134,8 @@ def attempt_with_questions(quiz: Quiz, attempt: Attempt) -> AttemptResponse:
 
     return AttemptResponse(**summary, total_questions=len(questions), questions=questions)
 
-
-def attempt_with_results(quiz: Quiz, attempt: Attempt) -> AttemptResponse:
-    summary = Attempt.model_validate(attempt).model_dump()
+def attempt_with_results(quiz: Quiz, attempt: AttemptSummary) -> AttemptResponse:
+    summary = AttemptSummary.model_validate(attempt).model_dump()
 
     questions_by_card = {}
     # index questions by card

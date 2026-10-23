@@ -24,13 +24,6 @@ class QuizQuestionPublic(BaseModel):
     prompt_snapshot: str # the question
     options_snapshot: List[QuizOptionSnapshot] | None # the answer, fill in the blank doesn't have ABCD so None
 
-class QuestionResult(BaseModel):
-    card_id: int
-    prompt_snapshot: str
-    options_snapshot: List[QuizOptionSnapshot] | None
-    user_answer: str | None
-    correct_answer: str
-
 class QuizViewSummary(BaseModel):
     """
     In list view, users can view all quizzes
@@ -54,7 +47,7 @@ class QuestionResult(BaseModel):
     user_answer: str | None
     correct_answer: str
     
-class Attempt(BaseModel):
+class AttemptSummary(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     attempt_id: int
@@ -63,7 +56,10 @@ class Attempt(BaseModel):
     started_at: datetime
     completed_at: datetime | None
 
-class AttemptResponse(Attempt):
+class AttemptResponse(AttemptSummary):
     total_questions: int
     questions: List[QuizQuestionPublic] | None = None
     wrong_questions: List[QuestionResult] | None = None
+
+class AttemptSubmit(AttemptSummary):
+    pass
