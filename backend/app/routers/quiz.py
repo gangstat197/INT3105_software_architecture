@@ -8,8 +8,8 @@ from ..db.session import get_db
 from ..models.user import User
 from ..schemas.quiz import (
     AttemptResponse,
-    # AttemptSubmit,
-    Attempt,
+    AttemptSubmit,
+    AttemptSummary,
     QuizCreate,
     QuizDetailResponse,
     QuizViewSummary,
@@ -34,10 +34,14 @@ def list_quizzes(db: Database, user: CurrentUser, quiz_type: QuizType | None = N
 def get_quiz(quiz_id: int, db: Database, user: CurrentUser):
     return service.get_quiz(db, user.user_id, quiz_id)
 
-@router.get("/api/quizzes/{quiz_id}/attempts", response_model=list[Attempt])
+@router.get("/api/quizzes/{quiz_id}/attempts", response_model=list[AttemptSummary])
 def list_attempt(quiz_id: int, db: Database, user: CurrentUser):
     return service.list_attempt(db, user.user_id, quiz_id)
 
 @router.post("/api/quizzes/{quiz_id}/attempts", response_model=AttemptResponse)
 def start_attempt(quiz_id: int, db: Database, user: CurrentUser):
     return service.start_attempt(db, user.user_id, quiz_id)
+
+@router.get("/api/quizzes/{quiz_id}/attempts/{attempt_id}", response_model=AttemptResponse)
+def get_attempt(quiz_id: int, attempt_id: int, db: Database, user: CurrentUser):
+    return service.get_attempt(db, user.user_id, quiz_id, attempt_id)
