@@ -1,6 +1,6 @@
 from backend.app.schemas.dictionary import *
 from sqlalchemy.orm import Session
-from backend.app.db.session import get_db
+from sqlalchemy.exc import IntegrityError
 from .dictionary_provider import lookup_provider, parse
 from backend.app.repositories.word import get_word_by_normalized_word, create_word
 import unicodedata
@@ -8,15 +8,13 @@ import string
 
 
 def normalize_word(word: str) -> str:
-    word = word.lower().strip()
-    word = word.strip(string.punctuation)
+    word = word.lower().strip(string.punctuation + string.whitespace)
     word = unicodedata.normalize("NFKD", word).encode("ascii", "ignore").decode("utf-8")
     
     return word
 
 
 def lookup(db: Session, word: str, language: str) -> WordLookupResult:
-    """Find or stage a word; the calling service commits the transaction."""
     normalized_word = normalize_word(word)
 
     existing_word = get_word_by_normalized_word(db, normalized_word, language)
@@ -25,7 +23,7 @@ def lookup(db: Session, word: str, language: str) -> WordLookupResult:
         return WordFound(word=existing_word)
 
     data = lookup_provider(
-        word=word, 
+        word=normalized_word, 
         language=language,
     )
 
@@ -34,12 +32,30 @@ def lookup(db: Session, word: str, language: str) -> WordLookupResult:
 
     provider_word, meanings = parse(data)
 
-    word_model = create_word(
-        db=db,
-        word=provider_word,
-        normalized_word=normalized_word,
-        language=language,
-        meanings=meanings,
-    )
+    try:
+        word_model = create_word(
+            db=db,
+            word=provider_word,
+            normalized_word=normalized_word,
+            language=language,
+            meanings=meanings,
+        )
 
-    return WordFound(word=word_model)
+        db.commit()
+        db.refresh(word_model)
+
+        return WordFound(word=word_model)
+
+    except IntegrityError:
+        db.rollback()
+
+        existing_word = get_word_by_normalized_word(
+            db,
+            normalized_word,
+            language,
+        )
+
+        if existing_word:
+            return WordFound(word=existing_word)
+
+        raise
