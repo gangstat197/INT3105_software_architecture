@@ -8,15 +8,13 @@ import string
 
 
 def normalize_word(word: str) -> str:
-    word = word.lower().strip()
-    word = word.strip(string.punctuation)
+    word = word.lower().strip(string.punctuation + string.whitespace)
     word = unicodedata.normalize("NFKD", word).encode("ascii", "ignore").decode("utf-8")
     
     return word
 
 
 def lookup(db: Session, word: str, language: str) -> WordLookupResult:
-    """Find or stage a word; the calling service commits the transaction."""
     normalized_word = normalize_word(word)
 
     existing_word = get_word_by_normalized_word(db, normalized_word, language)
@@ -25,7 +23,7 @@ def lookup(db: Session, word: str, language: str) -> WordLookupResult:
         return WordFound(word=existing_word)
 
     data = lookup_provider(
-        word=word, 
+        word=normalized_word, 
         language=language,
     )
 
