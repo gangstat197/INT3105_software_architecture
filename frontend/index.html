@@ -3,61 +3,98 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flashcards · API playground</title>
+    <meta name="theme-color" content="#6960d7" />
+    <title>Flashcards — Mỗi ngày, một chút tiến bộ</title>
   </head>
   <body>
     <fieldset id="controls">
-      <header>
-        <div><h1>Flashcards</h1><p>Giao diện nhỏ để thử API</p></div>
-        <div id="session" hidden><span id="username"></span> <button id="logout" type="button">Đăng xuất</button></div>
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Flashcards — Trang chủ"><span class="brand-mark" aria-hidden="true">f.</span><span>flashcards<span class="brand-dot">.</span></span></a>
+        <span class="topbar-note">A LITTLE PRACTICE. A LOT OF PROGRESS.</span>
+        <div id="session" class="row" hidden><span class="avatar" aria-hidden="true">☺</span><span id="username"></span><button id="logout" type="button" class="text-button">Đăng xuất ↗</button></div>
       </header>
-      <p id="status" role="status" aria-live="polite">Backend: localhost:8000 · API cần chạy trước.</p>
-      <section id="auth" class="panel narrow">
-        <h2>Tài khoản</h2>
-        <form id="auth-form" class="stack">
-          <label>Username<input name="username" required autocomplete="username" /></label>
-          <label>Email <small>(khi đăng ký)</small><input name="email" type="email" autocomplete="email" /></label>
-          <label>Password<input name="password" type="password" required autocomplete="current-password" /></label>
-          <div class="row"><button type="submit" name="action" value="login">Đăng nhập</button><button type="submit" name="action" value="register" class="secondary">Đăng ký</button></div>
-        </form>
-      </section>
-      <main id="app" hidden>
-        <aside class="panel">
-          <div class="row spread"><h2>Decks</h2><button id="refresh-decks" type="button" class="secondary">Tải lại</button></div>
-          <form id="create-deck" class="stack">
-            <label>Tên deck<input name="name" required maxlength="255" /></label>
-            <button type="submit">Tạo deck</button>
+
+      <section id="auth" class="auth-layout">
+        <div class="auth-story">
+          <span class="eyebrow">YOUR DAILY WORD CLUB</span>
+          <h1>Từ mới hôm nay.<br><em>Vốn từ ngày mai.</em></h1>
+          <p>Một góc nhỏ để gom từ hay, ôn đúng lúc và thử thách trí nhớ. Học từng chút, nhớ thật lâu.</p>
+          <div class="word-art" aria-hidden="true">
+            <span class="art-sticker">one word at a time ↗</span>
+            <div class="art-card"><span class="eyebrow">WORD OF THE MOMENT</span><span class="art-word">serendipity<span>✳</span></span><span class="art-ipa">/ˌser.ənˈdɪp.ə.ti/ &nbsp; noun</span><p>Một điều tốt đẹp tình cờ tìm thấy.</p><div class="art-footer"><span>little discoveries, big feelings.</span><span>01 / ∞</span></div></div>
+          </div>
+          <div class="story-tags"><span>↺ Ôn tập đúng lúc</span><span>✳ Quiz theo bộ từ</span><span>↗ Thấy mình tiến bộ</span></div>
+        </div>
+        <div class="auth-panel panel">
+          <span class="eyebrow">LET’S GET INTO IT</span>
+          <h2 id="auth-heading">Chào bạn trở lại.</h2>
+          <p id="auth-caption" class="muted">Bộ từ của bạn đang chờ một lần ôn nữa.</p>
+          <div class="auth-tabs" role="group" aria-label="Tài khoản"><button type="button" data-auth-mode="login" aria-pressed="true">Đăng nhập</button><button type="button" data-auth-mode="register" aria-pressed="false">Đăng ký</button></div>
+          <form id="auth-form" class="stack">
+            <label>Tên đăng nhập<input name="username" required autocomplete="username" placeholder="Tên của bạn" /></label>
+            <label id="register-email" hidden>Email<input name="email" type="email" autocomplete="email" placeholder="ban@example.com" disabled /></label>
+            <label>Mật khẩu<input name="password" type="password" required autocomplete="current-password" placeholder="Nhập mật khẩu" /></label>
+            <button id="auth-submit" type="submit" name="action" value="login">Vào góc học tập <span aria-hidden="true">→</span></button>
           </form>
-          <nav id="decks" aria-label="Danh sách deck"></nav>
+          <details class="auth-extra"><summary>Quên mật khẩu?</summary><form id="forgot-password" class="stack"><label>Email đã đăng ký<input name="email" type="email" required autocomplete="email" placeholder="ban@example.com" /></label><button type="submit" class="secondary">Gửi email đặt lại</button></form></details>
+          <details class="auth-extra"><summary>Đã có token đặt lại mật khẩu?</summary><form id="reset-password" class="stack"><label>Token trong email<input name="token" required autocomplete="off" /></label><label>Mật khẩu mới<input name="new_password" type="password" required autocomplete="new-password" /></label><button type="submit" class="secondary">Đặt lại mật khẩu</button></form></details>
+        </div>
+      </section>
+
+      <main id="app" hidden>
+        <aside class="sidebar">
+          <span class="eyebrow sidebar-label">YOUR STUDY SPACE</span>
+          <nav class="main-nav" aria-label="Điều hướng">
+            <button type="button" data-view="overview" aria-current="page"><span aria-hidden="true">◈</span> Tổng quan</button>
+            <button type="button" data-view="library"><span aria-hidden="true">▤</span> Bộ từ của bạn</button>
+            <button type="button" data-view="reviews"><span aria-hidden="true">↺</span> Ôn tập</button>
+            <button type="button" data-view="quizzes"><span aria-hidden="true">✳</span> Quiz & lịch sử</button>
+          </nav>
+          <div class="sidebar-decks">
+            <div class="row spread"><span class="eyebrow">BỘ TỪ <span id="deck-count">0</span></span><button id="refresh-decks" type="button" class="icon-button" aria-label="Tải lại bộ từ" title="Tải lại bộ từ">↻</button></div>
+            <nav id="decks" aria-label="Danh sách deck"></nav>
+            <form id="create-deck" class="stack"><label class="sr-only" for="new-deck-name">Tên bộ từ mới</label><input id="new-deck-name" name="name" required maxlength="255" placeholder="Tên bộ từ mới…" /><button type="submit" class="secondary">＋ Tạo bộ từ</button></form>
+          </div>
+          <div class="sidebar-note"><span aria-hidden="true">✦</span><p>Không cần học thật nhiều.<br>Chỉ cần quay lại ngày mai.</p></div>
         </aside>
-        <div class="stack">
-          <section class="panel">
-            <h2 id="deck-title">Chọn hoặc tạo deck</h2>
-            <div id="deck-content" hidden>
-              <form id="edit-deck" class="stack">
-                <label>Tên deck<input name="name" required maxlength="255" /></label>
-                <label>Mô tả<textarea name="description" rows="2"></textarea></label>
-                <div class="row"><button type="submit" class="secondary">Lưu deck</button><button id="delete-deck" type="button" class="danger">Xóa deck</button></div>
-              </form>
-              <hr />
-              <form id="add-card" class="stack">
-                <div class="row"><label class="grow">Từ cần học<input name="word" required maxlength="255" /></label><label>Ngôn ngữ<input name="language" value="en" required maxlength="10" size="4" /></label></div>
-                <label>Ghi chú<input name="notes" /></label>
-                <button type="submit">Thêm card</button>
-              </form>
-              <div class="row spread"><h3>Cards</h3><button id="refresh-cards" type="button" class="secondary">Tải lại</button></div>
-              <div id="cards" class="stack"></div>
+
+        <div class="workspace">
+          <div class="workspace-heading"><div><span class="eyebrow" id="view-kicker">YOUR LEARNING JOURNEY</span><h1 id="view-title">Một chút tiến bộ mỗi ngày.</h1></div><span class="today-label" id="today-label"></span></div>
+
+          <section id="overview" data-screen="overview" class="screen stack">
+            <div class="welcome-banner"><div><span class="eyebrow">SMALL STEPS, BIG WORDS</span><h2>Thêm một từ.<br>Mở thêm một thế giới.</h2><p>Ôn lại điều đã học, rồi dành chỗ cho điều mới.</p><button type="button" id="start-studying">Ôn tập ngay <span aria-hidden="true">↗</span></button></div><div class="mini-word" aria-hidden="true"><span>keep growing</span><strong>little<br>by little<span>✳</span></strong><span>mỗi ngày, một chút.</span></div></div>
+            <div class="section-heading row spread"><div><span class="eyebrow">THE BIG PICTURE</span><h2>Hành trình của bạn</h2></div><button id="refresh-statistics" type="button" class="text-button">Cập nhật ↻</button></div>
+            <div id="user-statistics" class="metrics"></div>
+            <div class="action-grid"><button type="button" class="action-card" data-go="library"><span class="action-symbol lavender">▤</span><h3>Gom những từ hay</h3><p>Tạo bộ từ theo chủ đề và lưu những điều muốn nhớ.</p><span class="action-link">Mở bộ từ <span aria-hidden="true">↗</span></span></button><button type="button" class="action-card" data-go="quizzes"><span class="action-symbol peach">✳</span><h3>Thử trí nhớ một chút?</h3><p>Trắc nghiệm hoặc điền từ. Làm lại để thấy mình tiến bộ.</p><span class="action-link">Khám phá quiz <span aria-hidden="true">↗</span></span></button></div>
+          </section>
+
+          <section id="library-section" data-screen="library" class="screen stack" hidden>
+            <div class="panel library-panel"><div class="row spread section-heading"><div><span class="eyebrow">YOUR WORD COLLECTION</span><h2 id="deck-title">Chọn hoặc tạo bộ từ</h2><p id="deck-description" class="muted">Một chủ đề mới, một khởi đầu mới.</p></div><span class="pill" id="card-count">0 từ</span></div>
+              <div id="deck-content" hidden>
+                <div id="deck-statistics" class="metrics compact"></div>
+                <details class="deck-settings"><summary>⚙ Chỉnh sửa bộ từ</summary><form id="edit-deck" class="stack"><label>Tên bộ từ<input name="name" required maxlength="255" /></label><label>Mô tả<textarea name="description" rows="2" placeholder="Bạn muốn học gì với bộ từ này?"></textarea></label><div class="row"><button type="submit" class="secondary">Lưu thay đổi</button><button id="delete-deck" type="button" class="danger">Xóa bộ từ</button></div></form></details>
+                <form id="add-card" class="stack card-composer"><div class="row spread"><h3>＋ Một từ mới</h3><span class="muted">Tra nghĩa và phát âm tự động</span></div><div class="row"><label class="grow">Từ cần học<input name="word" required maxlength="255" placeholder="Ví dụ: serendipity" /></label><label class="language-field">Ngôn ngữ<input name="language" value="en" required maxlength="10" size="4" /></label></div><div class="row"><label class="grow">Ghi chú <span class="optional">(tùy chọn)</span><input name="notes" placeholder="Một mẹo nhỏ để nhớ từ này…" /></label><button type="submit">Thêm vào bộ từ ↗</button></div></form>
+                <div class="row spread section-heading"><h3>Những từ đã lưu</h3><button id="refresh-cards" type="button" class="text-button">Cập nhật ↻</button></div><div id="cards" class="cards-grid"></div>
+              </div>
             </div>
           </section>
-          <section class="panel">
-            <div class="row spread"><h2>Ôn tập</h2><button id="load-reviews" type="button">Lấy card đến hạn</button></div>
-            <p class="muted">Tối đa 20 card trên tất cả deck. Xem đáp án rồi đánh dấu đúng/sai.</p>
-            <div id="reviews" class="stack"></div>
+
+          <section id="review-section" data-screen="reviews" class="screen stack" hidden>
+            <div class="section-intro"><span class="section-symbol">↺</span><div><h2>Nhớ lại, rồi nhớ lâu hơn.</h2><p class="muted">Tự nhớ nghĩa trước khi lật thẻ. Đúng hay sai đều giúp bạn tiến bộ.</p></div><button id="load-reviews" type="button">Lấy thẻ đến hạn ↻</button></div>
+            <p class="muted">Mỗi lượt tối đa 20 thẻ trên tất cả bộ từ. Lịch ôn sẽ tự điều chỉnh theo câu trả lời của bạn.</p><div id="reviews" class="review-grid"><div class="empty-state"><span aria-hidden="true">↺</span><h3>Sẵn sàng cho một lần nhớ lại?</h3><p>Lấy những thẻ đến hạn để bắt đầu.</p></div></div>
           </section>
+
+          <section id="quiz-section" data-screen="quizzes" class="screen stack" hidden>
+            <div class="quiz-layout"><div class="panel quiz-builder"><span class="eyebrow">A LITTLE BRAIN WORKOUT</span><h2>Tạo thử thách của bạn.</h2><p class="muted">Chọn một bộ từ, chọn cách chơi. Phần còn lại để trí nhớ lo.</p><form id="create-quiz" class="stack"><label>Bộ từ<select name="deck_id" id="quiz-deck" required></select></label><label>Kiểu bài<select name="quiz_type"><option value="fill_blank">Điền từ vào câu</option><option value="multiple_choice">Trắc nghiệm 4 lựa chọn</option></select></label><button type="submit" id="create-quiz-button">Tạo quiz <span aria-hidden="true">✳</span></button><p id="quiz-feedback" class="inline-feedback" role="status" hidden></p></form><details class="quiz-help"><summary>Cần gì để tạo được quiz?</summary><p>Tối đa 20 câu, từ các thẻ có câu ví dụ chứa từ đang học. Trắc nghiệm cần đủ 3 từ gây nhiễu khác cùng ngôn ngữ, không trùng đáp án hoặc từ đồng nghĩa. Chưa đủ từ? Thử kiểu điền từ.</p></details><div class="quiet-note">✧ Làm quiz không thay đổi lịch ôn tập của bạn.</div></div>
+              <div class="panel quiz-library"><div class="row spread"><div><span class="eyebrow">PRACTICE MAKES PROGRESS</span><h2>Quiz của bạn</h2></div><button id="refresh-quizzes" type="button" class="icon-button" aria-label="Tải lại quiz">↻</button></div><label class="sr-only" for="quiz-filter">Lọc kiểu quiz</label><select id="quiz-filter"><option value="">Tất cả kiểu bài</option><option value="multiple_choice">Trắc nghiệm</option><option value="fill_blank">Điền từ</option></select><nav id="quizzes" aria-label="Danh sách quiz"></nav></div></div>
+            <div id="quiz-detail" class="panel stack" hidden></div><div id="attempt" class="stack" aria-live="polite"></div>
+          </section>
+          <footer class="workspace-footer"><span>Made for a curious mind.</span><span>Học từng chút. Nhớ thật lâu. ✦</span></footer>
         </div>
       </main>
     </fieldset>
-    <details class="panel"><summary>Response API gần nhất</summary><pre id="response">Chưa có request.</pre></details>
+    <div id="status" role="status" aria-live="polite" hidden><span id="status-message"></span><button id="dismiss-status" type="button" aria-label="Đóng thông báo">×</button></div>
+    <details class="debug-panel"><summary>Chi tiết kỹ thuật · Response API</summary><pre id="response">Chưa có request.</pre></details>
     <script type="module" src="/src.js"></script>
   </body>
 </html>
