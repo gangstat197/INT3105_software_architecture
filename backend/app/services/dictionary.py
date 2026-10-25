@@ -1,6 +1,6 @@
 from backend.app.schemas.dictionary import *
 from sqlalchemy.orm import Session
-from backend.app.db.session import get_db
+from sqlalchemy.exc import IntegrityError
 from .dictionary_provider import lookup_provider, parse
 from backend.app.repositories.word import get_word_by_normalized_word, create_word
 import unicodedata
@@ -32,12 +32,30 @@ def lookup(db: Session, word: str, language: str) -> WordLookupResult:
 
     provider_word, meanings = parse(data)
 
-    word_model = create_word(
-        db=db,
-        word=provider_word,
-        normalized_word=normalized_word,
-        language=language,
-        meanings=meanings,
-    )
+    try:
+        word_model = create_word(
+            db=db,
+            word=provider_word,
+            normalized_word=normalized_word,
+            language=language,
+            meanings=meanings,
+        )
 
-    return WordFound(word=word_model)
+        db.commit()
+        db.refresh(word_model)
+
+        return WordFound(word=word_model)
+
+    except IntegrityError:
+        db.rollback()
+
+        existing_word = get_word_by_normalized_word(
+            db,
+            normalized_word,
+            language,
+        )
+
+        if existing_word:
+            return WordFound(word=existing_word)
+
+        raise
