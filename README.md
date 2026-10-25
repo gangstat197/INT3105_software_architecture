@@ -46,10 +46,15 @@ npm install
 npm run dev
 ```
 
-Mở URL Vite hiển thị (`http://localhost:5173`). Đăng ký/đăng nhập để thử tạo/sửa/xóa deck, thêm/sửa/chuyển/xóa card và ôn tập. Giao diện có response API để xem lỗi. Vite proxy `/api` sang `http://127.0.0.1:8000`.
+Mở URL Vite hiển thị (`http://localhost:5173`). Giao diện hỗ trợ đăng ký/đăng nhập, quên/đặt lại mật khẩu, quản lý deck/card, ôn tập, thống kê và quiz trắc nghiệm/điền từ. Có thể tạo quiz, làm/nộp bài, xem câu sai, tiếp tục lượt chưa nộp và xem lịch sử/điểm. Đáp án chưa nộp chỉ được giữ trong phiên trang hiện tại. Giao diện có response API để xem lỗi. Vite proxy `/api` sang `http://127.0.0.1:8000`.
 
 ## Tài liệu
 
 - [Cài đặt và chạy project](docs/01_installation-setup.md)
 - [Kiến trúc, nghiệp vụ và API](docs/02_architecture-convention.md)
 - [Quy ước commit](docs/00_commit-convention.md)
+- [Tải kiểm thử Kaggle CPU](docs/03_kaggle_cpu_load.md)
+
+## Kiểm thử tải trên Kaggle CPU
+
+Upload [notebook kiểm thử tải](notebooks/kaggle_cpu_load_test.ipynb) vào Kaggle, chọn **Accelerator: None**, bật **Internet**, rồi **Run All**. Notebook chạy PostgreSQL và FastAPI trên Kaggle, tạo dữ liệu mẫu, sau đó dùng Locust kiểm tải **1.000 người dùng đồng thời trong 90 giây** (dùng luân phiên 100 tài khoản cho các API chỉ đọc). Kết quả hiện ngay trong notebook và có báo cáo `load_report.html` để tải về. Code backend cần được push lên GitHub trước khi chạy.
