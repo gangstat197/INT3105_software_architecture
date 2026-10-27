@@ -38,7 +38,9 @@ Mở [Swagger UI](http://localhost:8000/docs) để thử API. Dừng service b�
 
 ## Frontend đơn giản test API
 
-Chạy backend bằng Docker như trên, sau đó mở terminal khác (Node.js 22.12+):
+![Test Frontend](backend/assets/test_frontend.png)
+
+Nhóm đã tạo 1 frontend để test thử hệ thống API. Chạy backend bằng Docker như trên, sau đó mở terminal khác (Node.js 22.12+):
 
 ```bash
 cd frontend
@@ -52,9 +54,11 @@ Mở URL Vite hiển thị (`http://localhost:5173`). Giao diện hỗ trợ đ�
 
 - [Cài đặt và chạy project](docs/01_installation-setup.md)
 - [Kiến trúc, nghiệp vụ và API](docs/02_architecture-convention.md)
+- [OpenAPI specification (JSON)](docs/openapi.json)
 - [Quy ước commit](docs/00_commit-convention.md)
-- [Tải kiểm thử Kaggle CPU](docs/03_kaggle_cpu_load.md)
+- [Kiểm thử tải Kaggle CPU](docs/03_kaggle_cpu_load.md)
+- [Tài liệu API](docs/openapi.json)
 
 ## Kiểm thử tải trên Kaggle CPU
 
-Upload [notebook kiểm thử tải](notebooks/kaggle_cpu_load_test.ipynb) vào Kaggle, chọn **Accelerator: None**, bật **Internet**, rồi **Run All**. Notebook chạy PostgreSQL và FastAPI trên Kaggle, tạo dữ liệu mẫu, sau đó dùng Locust kiểm tải **1.000 người dùng đồng thời trong 90 giây** (dùng luân phiên 100 tài khoản cho các API chỉ đọc). Kết quả hiện ngay trong notebook và có báo cáo `load_report.html` để tải về. Code backend cần được push lên GitHub trước khi chạy.
+Xem [báo cáo kiểm tải](docs/03_kaggle_cpu_load.md) để đối chiếu thiết lập, số liệu và điểm nghẽn của các lượt chạy. [Notebook](notebooks/kaggle_cpu_load_test.ipynb) chạy trên Kaggle CPU; bật Internet và push code backend lên GitHub trước khi chạy.

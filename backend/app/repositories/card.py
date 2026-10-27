@@ -20,6 +20,10 @@ def get_by_id(db: Session, card_id: int) -> Card | None:
     return db.scalar(select(Card).where(Card.card_id == card_id).options(*word_options()))
 
 
+def get_by_deck_word(db: Session, deck_id: int, word_id: int) -> Card | None:
+    return db.scalar(select(Card).where(Card.deck_id == deck_id, Card.word_id == word_id))
+
+
 def list_by_deck(db: Session, deck_id: int) -> list[Card]:
     return list(db.scalars(
         select(Card).where(Card.deck_id == deck_id)

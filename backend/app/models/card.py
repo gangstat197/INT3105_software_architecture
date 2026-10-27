@@ -1,11 +1,14 @@
 from .base import Base
 from typing import Optional
 from datetime import datetime
-from sqlalchemy import Text, DateTime, ForeignKey
+from sqlalchemy import Text, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class Card(Base):
     __tablename__ = "card"
+    __table_args__ = (
+        UniqueConstraint("deck_id", "word_id", name="uq_card_deck_word"),
+    )
 
     card_id: Mapped[int] = mapped_column(primary_key=True)
     deck_id: Mapped[int] = mapped_column(ForeignKey("deck.deck_id", ondelete="CASCADE"))

@@ -1,0 +1,2269 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register",
+        "operationId": "register_api_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/forgot-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Forgot Password",
+        "operationId": "forgot_password_api_auth_forgot_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Reset Password",
+        "operationId": "reset_password_api_auth_reset_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/decks": {
+      "get": {
+        "tags": [
+          "Decks"
+        ],
+        "summary": "List Decks",
+        "operationId": "list_decks_api_decks_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DeckResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Decks Api Decks Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Decks"
+        ],
+        "summary": "Create Deck",
+        "operationId": "create_deck_api_decks_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeckCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/decks/{deck_id}": {
+      "get": {
+        "tags": [
+          "Decks"
+        ],
+        "summary": "Get Deck",
+        "operationId": "get_deck_api_decks__deck_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deck_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Deck Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Decks"
+        ],
+        "summary": "Update Deck",
+        "operationId": "update_deck_api_decks__deck_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deck_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Deck Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeckUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Decks"
+        ],
+        "summary": "Delete Deck",
+        "operationId": "delete_deck_api_decks__deck_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deck_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Deck Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/decks/{deck_id}/statistics": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "summary": "Get Deck Statistics",
+        "operationId": "get_deck_statistics_api_decks__deck_id__statistics_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deck_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Deck Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeckStatisticsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quizzes/{quiz_id}/statistics": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "summary": "Get Quiz Statistics",
+        "operationId": "get_quiz_statistics_api_quizzes__quiz_id__statistics_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "quiz_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Quiz Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizStatisticsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/statistics": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "summary": "Get User Statistics",
+        "operationId": "get_user_statistics_api_statistics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserStatisticsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/decks/{deck_id}/cards": {
+      "post": {
+        "tags": [
+          "Cards"
+        ],
+        "summary": "Create Card",
+        "operationId": "create_card_api_decks__deck_id__cards_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deck_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Deck Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Cards"
+        ],
+        "summary": "List Cards",
+        "operationId": "list_cards_api_decks__deck_id__cards_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deck_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Deck Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CardResponse"
+                  },
+                  "title": "Response List Cards Api Decks  Deck Id  Cards Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cards/{card_id}": {
+      "patch": {
+        "tags": [
+          "Cards"
+        ],
+        "summary": "Update Card",
+        "operationId": "update_card_api_cards__card_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "card_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Card Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Cards"
+        ],
+        "summary": "Delete Card",
+        "operationId": "delete_card_api_cards__card_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "card_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Card Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviews/due": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "List Due Cards",
+        "operationId": "list_due_cards_api_reviews_due_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CardResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Due Cards Api Reviews Due Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/reviews/{card_id}": {
+      "post": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Review Card",
+        "operationId": "review_card_api_reviews__card_id__post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "card_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Card Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/decks/{deck_id}/quizzes": {
+      "post": {
+        "tags": [
+          "Quizzes"
+        ],
+        "summary": "Create Quiz",
+        "description": "Backend picks up to 20 valid cards from the deck and freezes the questions",
+        "operationId": "create_quiz_api_decks__deck_id__quizzes_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deck_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Deck Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quizzes": {
+      "get": {
+        "tags": [
+          "Quizzes"
+        ],
+        "summary": "List Quizzes",
+        "operationId": "list_quizzes_api_quizzes_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "quiz_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "multiple_choice",
+                    "fill_blank"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Quiz Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QuizViewSummary"
+                  },
+                  "title": "Response List Quizzes Api Quizzes Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quizzes/{quiz_id}": {
+      "get": {
+        "tags": [
+          "Quizzes"
+        ],
+        "summary": "Get Quiz",
+        "operationId": "get_quiz_api_quizzes__quiz_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "quiz_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Quiz Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quizzes/{quiz_id}/attempts": {
+      "get": {
+        "tags": [
+          "Quizzes"
+        ],
+        "summary": "List Attempt",
+        "operationId": "list_attempt_api_quizzes__quiz_id__attempts_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "quiz_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Quiz Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AttemptSummary"
+                  },
+                  "title": "Response List Attempt Api Quizzes  Quiz Id  Attempts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Quizzes"
+        ],
+        "summary": "Start Attempt",
+        "operationId": "start_attempt_api_quizzes__quiz_id__attempts_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "quiz_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Quiz Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quizzes/{quiz_id}/attempts/{attempt_id}": {
+      "get": {
+        "tags": [
+          "Quizzes"
+        ],
+        "summary": "Get Attempt",
+        "operationId": "get_attempt_api_quizzes__quiz_id__attempts__attempt_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "quiz_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Quiz Id"
+            }
+          },
+          {
+            "name": "attempt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Attempt Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quizzes/{quiz_id}/attempts/{attempt_id}/submit": {
+      "post": {
+        "tags": [
+          "Quizzes"
+        ],
+        "summary": "Submit Attempt",
+        "operationId": "submit_attempt_api_quizzes__quiz_id__attempts__attempt_id__submit_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "quiz_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Quiz Id"
+            }
+          },
+          {
+            "name": "attempt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Attempt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptSubmit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Answer": {
+        "properties": {
+          "card_id": {
+            "type": "integer",
+            "title": "Card Id"
+          },
+          "user_answer": {
+            "type": "string",
+            "title": "User Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "card_id",
+          "user_answer"
+        ],
+        "title": "Answer"
+      },
+      "AttemptResponse": {
+        "properties": {
+          "attempt_id": {
+            "type": "integer",
+            "title": "Attempt Id"
+          },
+          "quiz_id": {
+            "type": "integer",
+            "title": "Quiz Id"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "total_questions": {
+            "type": "integer",
+            "title": "Total Questions"
+          },
+          "questions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/QuizQuestionPublic"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Questions"
+          },
+          "wrong_questions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/QuestionResult"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wrong Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "attempt_id",
+          "quiz_id",
+          "score",
+          "started_at",
+          "completed_at",
+          "total_questions"
+        ],
+        "title": "AttemptResponse"
+      },
+      "AttemptSubmit": {
+        "properties": {
+          "answers": {
+            "items": {
+              "$ref": "#/components/schemas/Answer"
+            },
+            "type": "array",
+            "title": "Answers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answers"
+        ],
+        "title": "AttemptSubmit"
+      },
+      "AttemptSummary": {
+        "properties": {
+          "attempt_id": {
+            "type": "integer",
+            "title": "Attempt Id"
+          },
+          "quiz_id": {
+            "type": "integer",
+            "title": "Quiz Id"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "attempt_id",
+          "quiz_id",
+          "score",
+          "started_at",
+          "completed_at"
+        ],
+        "title": "AttemptSummary"
+      },
+      "CardCreate": {
+        "properties": {
+          "word": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Word"
+          },
+          "language": {
+            "type": "string",
+            "maxLength": 10,
+            "minLength": 1,
+            "title": "Language",
+            "default": "en"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "word"
+        ],
+        "title": "CardCreate"
+      },
+      "CardResponse": {
+        "properties": {
+          "card_id": {
+            "type": "integer",
+            "title": "Card Id"
+          },
+          "deck_id": {
+            "type": "integer",
+            "title": "Deck Id"
+          },
+          "word_id": {
+            "type": "integer",
+            "title": "Word Id"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "word": {
+            "$ref": "#/components/schemas/WordResponse"
+          },
+          "progress_level": {
+            "type": "integer",
+            "title": "Progress Level"
+          },
+          "last_reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Reviewed At"
+          },
+          "next_reviewed_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Reviewed Date"
+          },
+          "review_total_count": {
+            "type": "integer",
+            "title": "Review Total Count"
+          },
+          "review_correct_count": {
+            "type": "integer",
+            "title": "Review Correct Count"
+          },
+          "review_version": {
+            "type": "integer",
+            "title": "Review Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "card_id",
+          "deck_id",
+          "word_id",
+          "notes",
+          "word",
+          "progress_level",
+          "last_reviewed_at",
+          "next_reviewed_date",
+          "review_total_count",
+          "review_correct_count",
+          "review_version"
+        ],
+        "title": "CardResponse"
+      },
+      "CardUpdate": {
+        "properties": {
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "deck_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deck Id"
+          }
+        },
+        "type": "object",
+        "title": "CardUpdate"
+      },
+      "DeckCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "DeckCreate"
+      },
+      "DeckResponse": {
+        "properties": {
+          "deck_id": {
+            "type": "integer",
+            "title": "Deck Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "deck_id",
+          "name",
+          "description"
+        ],
+        "title": "DeckResponse"
+      },
+      "DeckStatisticsResponse": {
+        "properties": {
+          "deck_id": {
+            "type": "integer",
+            "title": "Deck Id"
+          },
+          "deck_name": {
+            "type": "string",
+            "title": "Deck Name"
+          },
+          "total_cards": {
+            "type": "integer",
+            "title": "Total Cards"
+          },
+          "progress": {
+            "type": "number",
+            "title": "Progress"
+          },
+          "review_accuracy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Accuracy"
+          }
+        },
+        "type": "object",
+        "required": [
+          "deck_id",
+          "deck_name",
+          "total_cards",
+          "progress",
+          "review_accuracy"
+        ],
+        "title": "DeckStatisticsResponse"
+      },
+      "DeckUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "title": "DeckUpdate"
+      },
+      "DefinitionResponse": {
+        "properties": {
+          "definition": {
+            "type": "string",
+            "title": "Definition"
+          },
+          "example": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Example"
+          },
+          "synonyms": {
+            "items": {
+              "$ref": "#/components/schemas/RelatedWordResponse"
+            },
+            "type": "array",
+            "title": "Synonyms"
+          },
+          "antonyms": {
+            "items": {
+              "$ref": "#/components/schemas/RelatedWordResponse"
+            },
+            "type": "array",
+            "title": "Antonyms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "definition",
+          "example",
+          "synonyms",
+          "antonyms"
+        ],
+        "title": "DefinitionResponse"
+      },
+      "ForgotPasswordRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "title": "ForgotPasswordRequest"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LoginRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "LoginResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token"
+        ],
+        "title": "LoginResponse"
+      },
+      "MeaningResponse": {
+        "properties": {
+          "part_of_speech": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Part Of Speech"
+          },
+          "ipa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ipa"
+          },
+          "audio": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio"
+          },
+          "definitions": {
+            "items": {
+              "$ref": "#/components/schemas/DefinitionResponse"
+            },
+            "type": "array",
+            "title": "Definitions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "part_of_speech",
+          "ipa",
+          "audio",
+          "definitions"
+        ],
+        "title": "MeaningResponse"
+      },
+      "MessageResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "MessageResponse"
+      },
+      "QuestionResult": {
+        "properties": {
+          "card_id": {
+            "type": "integer",
+            "title": "Card Id"
+          },
+          "prompt_snapshot": {
+            "type": "string",
+            "title": "Prompt Snapshot"
+          },
+          "options_snapshot": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/QuizOptionSnapshot"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options Snapshot"
+          },
+          "user_answer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Answer"
+          },
+          "correct_answer": {
+            "type": "string",
+            "title": "Correct Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "card_id",
+          "prompt_snapshot",
+          "options_snapshot",
+          "user_answer",
+          "correct_answer"
+        ],
+        "title": "QuestionResult",
+        "description": "A question the user got wrong, revealed only after submit"
+      },
+      "QuizAttemptStatistics": {
+        "properties": {
+          "score": {
+            "type": "integer",
+            "title": "Score"
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Completed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "score",
+          "completed_at"
+        ],
+        "title": "QuizAttemptStatistics"
+      },
+      "QuizCreate": {
+        "properties": {
+          "quiz_type": {
+            "type": "string",
+            "enum": [
+              "multiple_choice",
+              "fill_blank"
+            ],
+            "title": "Quiz Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "quiz_type"
+        ],
+        "title": "QuizCreate",
+        "description": "Ensure quiz type can only be of 2 types"
+      },
+      "QuizDetailResponse": {
+        "properties": {
+          "quiz_id": {
+            "type": "integer",
+            "title": "Quiz Id"
+          },
+          "deck_id": {
+            "type": "integer",
+            "title": "Deck Id"
+          },
+          "quiz_type": {
+            "type": "string",
+            "enum": [
+              "multiple_choice",
+              "fill_blank"
+            ],
+            "title": "Quiz Type"
+          },
+          "quiz_questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuizQuestionPublic"
+            },
+            "type": "array",
+            "title": "Quiz Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "quiz_id",
+          "deck_id",
+          "quiz_type",
+          "quiz_questions"
+        ],
+        "title": "QuizDetailResponse",
+        "description": "One quiz with its questions (no answers), for viewing or taking it"
+      },
+      "QuizOptionSnapshot": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ],
+            "title": "Id"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "text"
+        ],
+        "title": "QuizOptionSnapshot",
+        "description": "One option in multiple choice"
+      },
+      "QuizQuestionPublic": {
+        "properties": {
+          "card_id": {
+            "type": "integer",
+            "title": "Card Id"
+          },
+          "prompt_snapshot": {
+            "type": "string",
+            "title": "Prompt Snapshot"
+          },
+          "options_snapshot": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/QuizOptionSnapshot"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options Snapshot"
+          }
+        },
+        "type": "object",
+        "required": [
+          "card_id",
+          "prompt_snapshot",
+          "options_snapshot"
+        ],
+        "title": "QuizQuestionPublic",
+        "description": "Public quiz question so we don't send answer before the user submits\nso there's no answer_snapshot field like in DB model"
+      },
+      "QuizStatisticsResponse": {
+        "properties": {
+          "quiz_id": {
+            "type": "integer",
+            "title": "Quiz Id"
+          },
+          "quiz_type": {
+            "type": "string",
+            "title": "Quiz Type"
+          },
+          "total_attempts": {
+            "type": "integer",
+            "title": "Total Attempts"
+          },
+          "average_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Score"
+          },
+          "best_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Score"
+          },
+          "attempts": {
+            "items": {
+              "$ref": "#/components/schemas/QuizAttemptStatistics"
+            },
+            "type": "array",
+            "title": "Attempts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "quiz_id",
+          "quiz_type",
+          "total_attempts",
+          "average_score",
+          "best_score",
+          "attempts"
+        ],
+        "title": "QuizStatisticsResponse"
+      },
+      "QuizViewSummary": {
+        "properties": {
+          "quiz_id": {
+            "type": "integer",
+            "title": "Quiz Id"
+          },
+          "deck_id": {
+            "type": "integer",
+            "title": "Deck Id"
+          },
+          "quiz_type": {
+            "type": "string",
+            "enum": [
+              "multiple_choice",
+              "fill_blank"
+            ],
+            "title": "Quiz Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "quiz_id",
+          "deck_id",
+          "quiz_type"
+        ],
+        "title": "QuizViewSummary",
+        "description": "In list view, users can view all quizzes"
+      },
+      "RegisterRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "email",
+          "password"
+        ],
+        "title": "RegisterRequest"
+      },
+      "RegisterResponse": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "username",
+          "email"
+        ],
+        "title": "RegisterResponse"
+      },
+      "RelatedWordResponse": {
+        "properties": {
+          "word": {
+            "type": "string",
+            "title": "Word"
+          }
+        },
+        "type": "object",
+        "required": [
+          "word"
+        ],
+        "title": "RelatedWordResponse"
+      },
+      "ResetPasswordRequest": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "new_password": {
+            "type": "string",
+            "title": "New Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "new_password"
+        ],
+        "title": "ResetPasswordRequest"
+      },
+      "ReviewCreate": {
+        "properties": {
+          "is_correct": {
+            "type": "boolean",
+            "title": "Is Correct"
+          },
+          "expected_review_version": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Expected Review Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "is_correct",
+          "expected_review_version"
+        ],
+        "title": "ReviewCreate"
+      },
+      "UserStatisticsResponse": {
+        "properties": {
+          "total_decks": {
+            "type": "integer",
+            "title": "Total Decks"
+          },
+          "total_cards": {
+            "type": "integer",
+            "title": "Total Cards"
+          },
+          "overall_progress": {
+            "type": "number",
+            "title": "Overall Progress"
+          },
+          "overall_review_accuracy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Overall Review Accuracy"
+          },
+          "total_quizzes_completed": {
+            "type": "integer",
+            "title": "Total Quizzes Completed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_decks",
+          "total_cards",
+          "overall_progress",
+          "overall_review_accuracy",
+          "total_quizzes_completed"
+        ],
+        "title": "UserStatisticsResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WordResponse": {
+        "properties": {
+          "word_id": {
+            "type": "integer",
+            "title": "Word Id"
+          },
+          "word": {
+            "type": "string",
+            "title": "Word"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language"
+          },
+          "meanings": {
+            "items": {
+              "$ref": "#/components/schemas/MeaningResponse"
+            },
+            "type": "array",
+            "title": "Meanings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "word_id",
+          "word",
+          "language",
+          "meanings"
+        ],
+        "title": "WordResponse"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
