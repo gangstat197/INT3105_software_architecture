@@ -10,11 +10,9 @@ class DeckStatisticsResponse(BaseModel):
     review_accuracy: float | None
 
 
-
 class QuizAttemptStatistics(BaseModel):
     score: int
     completed_at: datetime
-
 
 
 class QuizStatisticsResponse(BaseModel):
@@ -26,14 +24,9 @@ class QuizStatisticsResponse(BaseModel):
     attempts: list[QuizAttemptStatistics]
 
 
-
 class UserStatisticsResponse(BaseModel):
     total_decks: int
     total_cards: int
     overall_progress: float
     overall_review_accuracy: float | None
     total_quizzes_completed: int
-
-
-
-

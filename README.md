@@ -6,6 +6,8 @@
 
 Backend sử dụng **FastAPI, SQLAlchemy, PostgreSQL và Docker Compose**.
 
+![User Story](backend/assets/user_story.jpg)
+
 ## Chức năng chính
 
 - **Tài khoản:** đăng ký, đăng nhập và đặt lại mật khẩu qua email. Mỗi người dùng quản lý bộ thẻ của riêng mình.

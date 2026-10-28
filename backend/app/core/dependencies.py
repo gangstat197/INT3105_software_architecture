@@ -18,7 +18,7 @@ def get_current_user(
     if credentials is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated"
+            detail="Unauthorized"
         )
 
     payload = decode_access_token(credentials.credentials)

@@ -30,6 +30,7 @@ def blank_word(example: str, word: str):
     """Replace whole-word matches of `word` with a blank, or None if the word isn't in the example."""
     pattern = re.compile(rf"\b{re.escape(word)}\b", re.IGNORECASE)
     prompt, count = pattern.subn("_____", example)
+
     return prompt if count else None
 
 def build_options(answer: str, distractors: list[str]) -> tuple[list[dict], str] | None:
@@ -135,7 +136,7 @@ def attempt_with_results(quiz: Quiz, attempt: AttemptSummary) -> AttemptResponse
 
     questions_by_card = {}
     # index questions by card
-    # {i: <some question>}
+    # {card_id: <some question>}
     for question in quiz.quiz_questions:
         questions_by_card[question.card_id] = question
     
@@ -187,6 +188,7 @@ def submit_attempt(db: Session, user_id: int, quiz_id: int, attempt_id: int, dat
     for answer in data.answers:
         answers[answer.card_id] = answer.user_answer
 
+    
     if len(answers) != len(data.answers):
         raise HTTPException(status_code=422, detail="Each card_id may only be answered once")
     if answers.keys() != questions.keys():
