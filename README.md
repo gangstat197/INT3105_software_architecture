@@ -4,7 +4,7 @@
 
 Ứng dụng hỗ trợ học từ vựng bằng flashcard. Người dùng tạo bộ thẻ theo chủ đề, thêm từ cần học và sử dụng dữ liệu từ điển để hiểu nghĩa, cách phát âm và cách dùng. Sau đó, người dùng ôn tập theo lịch Leitner, làm quiz và theo dõi tiến độ học.
 
-Backend sử dụng **FastAPI, SQLAlchemy, PostgreSQL và Docker Compose**.
+Backend sử dụng **FastAPI, SQLAlchemy, PostgreSQL và Docker**.
 
 ## Chức năng chính
 
